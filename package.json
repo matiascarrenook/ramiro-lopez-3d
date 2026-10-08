@@ -1,0 +1,23 @@
+{
+  "name": "ramiro-lopez-3d",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@types/node": "^24.6.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.7"
+  },
+  "dependencies": {
+    "@types/three": "^0.186.0",
+    "three": "^0.186.1"
+  }
+}

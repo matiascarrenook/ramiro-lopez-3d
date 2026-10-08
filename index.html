@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Ramiro López · Artista 3D | Sculptor</title>
+  <meta name="description"
+    content="Artista 3D especializado en diseño orgánico. Portfolio experimental con modelos 3D interactivos." />
+  <meta name="theme-color" content="#000000" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Plus+Jakarta+Sans:wght@600;700;800&family=Satoshi:wght@400;500;700&display=swap"
+    rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+</head>
+
+<body class="bg-black text-white font-[Inter,Satoshi,system-ui,sans-serif] antialiased">
+  <header class="fixed inset-x-0 top-0 z-50 nav-brutal pt-[env(safe-area-inset-top)]">
+    <nav class="relative mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+      <a href="#inicio" class="group flex min-w-0 items-center">
+        <img src="/logo.png" alt="Ramiro López" class="logo-glow h-9 w-auto max-w-[130px] object-contain sm:h-12 sm:max-w-[200px] md:h-14 md:max-w-[240px] lg:h-16 lg:max-w-[280px]" />
+      </a>
+
+      <div class="flex shrink-0 items-center gap-4 sm:gap-8 md:gap-10">
+        <div class="hidden items-center gap-8 sm:gap-10 md:flex">
+          <a href="#trabajos" class="link-brutal">Portfolio</a>
+          <a href="#sobre" class="link-brutal">About</a>
+          <a href="#contacto" class="link-brutal">Contact</a>
+        </div>
+        <a href="#trabajos" class="btn-brutal group px-3 text-[10px] sm:px-4 sm:text-xs">
+          Selected Work
+          <i class="bi bi-arrow-right transition-transform group-hover:translate-x-0.5"></i>
+        </a>
+      </div>
+    </nav>
+    <div class="grain"></div>
+  </header>
+
+  <main>
+    <section id="inicio" class="relative overflow-hidden pt-[calc(4rem+env(safe-area-inset-top))]">
+      <div class="pointer-events-none absolute inset-0 -z-10">
+        <div class="absolute -top-[15%] left-1/2 h-[38rem] w-[38rem] -translate-x-1/2 rounded-full bg-white/[0.08] blur-[160px]"></div>
+        <div class="grain"></div>
+      </div>
+
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid items-center gap-10 pb-12 pt-10 sm:pb-16 sm:pt-14 lg:grid-cols-2 lg:gap-16">
+          <div class="relative">
+
+            <div class="rule-h mb-6"></div>
+            <p class="mb-6 text-[10px] uppercase tracking-[0.28em] text-white/50 sm:text-xs">
+              ARTISTA 3D · SCULPTOR
+            </p>
+            <h1 class="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-balance break-words text-[2.75rem] leading-[0.92] tracking-tight sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl">
+              RAMIRO
+              <br />
+              LÓPEZ
+            </h1>
+            <div class="mt-6 flex items-center gap-4 text-[10px] uppercase tracking-[0.2em] text-white/50 sm:text-xs">
+              <span>3D DESIGNER</span>
+              <span>·</span>
+              <span>ORGANIC FORM</span>
+            </div>
+
+            <div class="mt-8 flex flex-wrap items-center gap-3 sm:gap-4">
+              <a href="#trabajos" class="btn-brutal group">
+                Selected Work
+                <i class="bi bi-arrow-down transition-transform group-hover:translate-y-0.5"></i>
+              </a>
+              <a href="#sobre" class="link-brutal">About</a>
+            </div>
+            <div class="mt-10 rule-h"></div>
+          </div>
+
+          <div class="relative">
+            <div class="absolute -top-4 right-0 text-[10px] uppercase tracking-[0.2em] text-white/40">
+              MODEL / ROTATE / EXPLORE
+            </div>
+            <div class="relative mx-auto aspect-[4/5] max-w-md overflow-hidden border border-white/15 bg-black sm:max-w-lg lg:max-w-xl"
+              style="clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))">
+              <div id="hero-viewer" class="absolute inset-0 h-full w-full"></div>
+              <div id="hero-placeholder" class="absolute inset-0 grid place-items-center bg-black">
+                <div class="text-center">
+                  <div class="mx-auto mb-4 h-8 w-8 animate-spin border border-white/20 border-t-white/80"></div>
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-white/50">Loading Model</p>
+                </div>
+              </div>
+              <div class="grain"></div>
+            </div>
+            <div class="absolute -bottom-3 left-4 flex items-center gap-2 border border-white/15 bg-black/90 px-3 py-1 text-[10px] uppercase tracking-[0.18em] backdrop-blur-sm"
+              style="clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%)">
+              <i class="bi bi-360"></i> Drag · Orbit
+            </div>
+          </div>
+        </div>
+        <div class="rule-h"></div>
+      </div>
+    </section>
+
+    <section id="trabajos" class="relative scroll-mt-20 py-16 sm:py-24">
+      <div class="grain"></div>
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-10 flex flex-col gap-4 sm:mb-14 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+
+            <h2 class="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-5xl tracking-tight sm:text-6xl md:text-7xl">
+              TRABAJOS
+            </h2>
+            <p class="mt-4 max-w-2xl text-pretty text-sm text-white/70 sm:text-base">
+              Composición editorial asimétrica. Cada proyecto como pieza autónoma.
+            </p>
+          </div>
+          <div class="text-[10px] uppercase tracking-[0.2em] text-white/40">MODEL · RENDER · FORM</div>
+        </div>
+        <div class="mb-8 rule-h"></div>
+        <div id="cases-grid" class="grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 lg:grid-cols-3"></div>
+      </div>
+    </section>
+
+    <section id="sobre" class="relative scroll-mt-20 border-t border-white/10 py-16 sm:py-24">
+      <div class="grain"></div>
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-2">
+          <div>
+
+            <h2 class="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-5xl tracking-tight sm:text-6xl md:text-7xl">
+              ABOUT
+            </h2>
+            <p class="mt-6 text-pretty text-lg leading-relaxed text-white/90">
+              Soy Ramiro, artista 3D de Argentina especializado en crear figuras aptas para
+              impresión 3D. Trabajo mano a mano con cada cliente para transformar ideas,
+              personajes y conceptos en piezas con identidad propia.
+            </p>
+            <p class="mt-4 text-pretty text-sm leading-relaxed text-white/70 sm:text-base">
+              Soy escultor 3D, con experiencia en modelado, escultura digital y optimización
+              para impresión de modelos para lograr resultados limpios y sólidos. Mi herramienta
+              principal es Blender, donde trabajo cada detalle para que el resultado final no
+              solo se vea increíble en pantalla, sino que también funcione en el mundo físico.
+            </p>
+            <p class="mt-4 text-pretty text-sm leading-relaxed text-white/70 sm:text-base">
+              Me gusta trabajar de forma cercana, profesional y directa. La mayoría de mis
+              proyectos los desarrollo junto con mis clientes, entendiendo y llevando esa idea
+              desde el concepto hasta algo tangible.
+            </p>
+            <div class="mt-8 rule-h"></div>
+            <p class="mt-6 font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-pretty text-xl italic leading-snug tracking-tight text-white sm:text-2xl">
+              No hago simplemente modelos 3D. Creo piezas que están hechas para existir.
+            </p>
+            <div class="mt-8">
+              <p class="mb-3 text-[10px] uppercase tracking-[0.2em] text-white/50">TOOLS</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="tag">BLENDER</span>
+                <span class="tag">ZBRUSH</span>
+                <span class="tag">CLIP STUDIO PAINT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="contacto" class="relative scroll-mt-20 border-t border-white/10 py-20 sm:py-28">
+      <div class="grain"></div>
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div>
+
+          <h2 class="font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-balance break-words text-[2.6rem] leading-[0.9] tracking-tight sm:text-7xl md:text-8xl lg:text-9xl">
+            LET'S
+            <br />
+            MAKE
+            <br />
+            SOMETHING.
+          </h2>
+          <div class="mt-10 flex flex-wrap items-center gap-6 sm:gap-8">
+            <a href="mailto:ramirolopez3d@gmail.com" class="btn-brutal group">
+              Email
+              <i class="bi bi-arrow-up-right transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5"></i>
+            </a>
+            <a href="https://www.artstation.com/" target="_blank" rel="noopener noreferrer" class="link-brutal">ArtStation</a>
+            <a href="https://www.behance.net/" target="_blank" rel="noopener noreferrer" class="link-brutal">Behance</a>
+            <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" class="link-brutal">Instagram</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="border-t border-white/10 pt-8 pb-[calc(2rem+env(safe-area-inset-bottom))]">
+    <div class="grain"></div>
+    <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 sm:flex-row sm:px-6 lg:px-8">
+      <div class="flex items-center gap-3">
+        <img src="/logo.png" alt="Ramiro López" class="h-8 w-auto object-contain opacity-90" />
+        <span class="text-[10px] uppercase tracking-[0.2em] text-white/50">ARTISTA 3D</span>
+      </div>
+      <p class="text-[10px] uppercase tracking-[0.2em] text-white/40">
+        © <span id="year"></span> RAMIRO LÓPEZ
+      </p>
+    </div>
+  </footer>
+
+  <dialog id="case-modal" class="m-0 h-full w-full max-w-none bg-transparent p-0 outline-none">
+    <div class="relative flex h-dvh w-screen flex-col bg-black">
+      <header class="sticky top-0 z-10 flex items-center justify-between gap-4 border-b border-white/15 bg-black/90 px-4 py-3 backdrop-blur-sm sm:px-6">
+        <div class="flex min-w-0 items-center gap-3 sm:gap-4">
+          <button id="close-modal" class="btn-brutal" aria-label="Cerrar">
+            <i class="bi bi-x-lg"></i>
+            Close
+          </button>
+          <div class="min-w-0">
+            <h3 id="modal-title" class="truncate font-['Plus_Jakarta_Sans',system-ui,sans-serif] text-base tracking-tight sm:text-lg md:text-xl"></h3>
+            <p id="modal-tags" class="truncate text-[10px] uppercase tracking-[0.16em] text-white/50"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button id="prev-case" class="link-brutal hidden sm:inline-flex disabled:pointer-events-none disabled:opacity-40">
+            <i class="bi bi-chevron-left"></i> Prev
+          </button>
+          <button id="next-case" class="link-brutal hidden sm:inline-flex disabled:pointer-events-none disabled:opacity-40">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+          <button id="toggle-info" class="link-brutal" aria-expanded="true">Info</button>
+        </div>
+      </header>
+      <div class="relative flex min-h-0 flex-1 flex-col lg:flex-row">
+        <div class="relative h-[52dvh] shrink-0 bg-black lg:h-auto lg:min-h-0 lg:flex-1">
+          <div id="case-viewer" class="absolute inset-0 h-full w-full"></div>
+          <div id="case-placeholder" class="absolute inset-0 grid place-items-center bg-black">
+            <div class="text-center">
+              <div class="mx-auto mb-4 h-8 w-8 animate-spin border border-white/20 border-t-white/80"></div>
+              <p class="text-[10px] uppercase tracking-[0.2em] text-white/50">Loading Model</p>
+            </div>
+          </div>
+          <div class="grain"></div>
+        </div>
+        <aside id="info-panel"
+          class="flex min-h-0 flex-1 flex-col border-t border-white/15 bg-black/95 lg:flex-none lg:max-h-none lg:w-[420px] lg:border-l lg:border-t-0 xl:w-[440px]">
+          <div class="flex-1 space-y-8 overflow-y-auto px-4 py-6 sm:px-6 sm:py-8">
+            <div>
+              <p class="mb-2 text-[10px] uppercase tracking-[0.2em] text-white/50">DESCRIPTION</p>
+              <p id="modal-description" class="text-pretty text-sm leading-relaxed text-white/80 sm:text-base"></p>
+            </div>
+            <div class="rule-h"></div>
+            <div>
+              <p class="mb-3 text-[10px] uppercase tracking-[0.2em] text-white/50">SPECIFICATIONS</p>
+              <dl class="grid grid-cols-1 gap-3 text-sm">
+                <div class="flex items-center justify-between border-b border-white/10 py-2.5">
+                  <dt class="text-white/50">YEAR</dt>
+                  <dd id="modal-year"></dd>
+                </div>
+                <div class="flex items-start justify-between border-b border-white/10 py-2.5">
+                  <dt class="text-white/50">SOFTWARE</dt>
+                  <dd id="modal-software" class="text-right"></dd>
+                </div>
+                <div class="flex items-center justify-between border-b border-white/10 py-2.5">
+                  <dt class="text-white/50">FOCUS</dt>
+                  <dd id="modal-focus">Diseño orgánico</dd>
+                </div>
+                <div class="flex items-center justify-between border-b border-white/10 py-2.5">
+                  <dt class="text-white/50">FORMAT</dt>
+                  <dd>GLB</dd>
+                </div>
+              </dl>
+            </div>
+            <div id="gallery-section" class="hidden">
+              <div class="flex items-center justify-between">
+                <p class="text-[10px] uppercase tracking-[0.2em] text-white/50">RENDERS</p>
+                <span id="gallery-count" class="text-[10px] uppercase tracking-[0.2em] text-white/40"></span>
+              </div>
+              <div id="gallery-grid" class="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3 sm:gap-3"></div>
+            </div>
+            <div id="links-section" class="hidden">
+              <p class="text-[10px] uppercase tracking-[0.2em] text-white/50">LINKS</p>
+              <div id="links-list" class="mt-3 flex flex-col gap-2"></div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </dialog>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+
+</html>
