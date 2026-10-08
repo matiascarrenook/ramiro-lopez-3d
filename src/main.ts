@@ -126,6 +126,19 @@ function renderCases() {
       }
     });
 
+    // Precarga bajo interacción: al pasar el mouse o tocar, el modelo queda en caché.
+    let preloaded = false;
+    const prefetch = () => {
+      if (preloaded) return;
+      preloaded = true;
+      try {
+        fetch(asset(c.modelUrl), { mode: "cors", priority: "low" }).catch(() => (preloaded = false));
+      } catch {}
+    };
+    card.addEventListener("mouseenter", prefetch, { once: true });
+    card.addEventListener("touchstart", prefetch, { once: true });
+    card.addEventListener("focusin", prefetch, { once: true });
+
     casesGrid.appendChild(card);
   });
 }
@@ -364,21 +377,4 @@ document.addEventListener("keydown", (e) => {
 renderCases();
 setHeroModel();
 
-// Precarga los modelos en segundo plano (después de que cargue el hero)
-// para que abrir un caso no espere la descarga completa por primera vez.
-// Secuencial: evita saturar el ancho de banda con 120MB en paralelo.
-async function preloadModels() {
-  await new Promise<void>((resolve) => {
-    if ((window as any).__viewerLoaded) return resolve();
-    heroContainer?.addEventListener("viewer-loaded", () => resolve(), { once: true });
-    heroContainer?.addEventListener("viewer-error", () => resolve(), { once: true });
-    setTimeout(resolve, 15000);
-  });
-  const urls = [...new Set(cases.map((c) => c.modelUrl))];
-  for (const u of urls) {
-    try {
-      await fetch(asset(u), { mode: "cors", priority: "low" });
-    } catch {}
-  }
-}
-window.addEventListener("load", preloadModels, { once: true });
+// Precarga solo bajo interacción (hover/touch) para no pesar la carga inicial.
