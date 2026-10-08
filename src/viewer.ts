@@ -59,8 +59,14 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   const width = container.clientWidth || 1;
   const height = container.clientHeight || 1;
 
-  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.matchMedia("(pointer: coarse)").matches;
+
+  const renderer = new THREE.WebGLRenderer({
+    antialias: !isMobile,
+    alpha: true,
+    powerPreference: "high-performance",
+  });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.75));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = options.exposure ?? DEFAULT_EXPOSURE;
@@ -68,6 +74,15 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   renderer.domElement.style.display = "block";
   renderer.domElement.style.touchAction = "none";
   container.appendChild(renderer.domElement);
+
+  renderer.domElement.addEventListener(
+    "webglcontextlost",
+    (e) => {
+      e.preventDefault();
+      container.dispatchEvent(new CustomEvent("viewer-error"));
+    },
+    { once: true }
+  );
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(35, width / height, 0.01, 10000);
