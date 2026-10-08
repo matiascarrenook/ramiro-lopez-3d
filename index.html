@@ -86,9 +86,13 @@
               style="clip-path: polygon(0 0, calc(100% - 20px) 0, 100% 20px, 100% 100%, 20px 100%, 0 calc(100% - 20px))">
               <div id="hero-viewer" class="absolute inset-0 h-full w-full"></div>
               <div id="hero-placeholder" class="absolute inset-0 grid place-items-center bg-black">
-                <div class="text-center">
+                <div class="w-48 text-center">
                   <div class="mx-auto mb-4 h-8 w-8 animate-spin border border-white/20 border-t-white/80"></div>
-                  <p class="text-[10px] uppercase tracking-[0.2em] text-white/50">Loading Model</p>
+                  <p class="mb-3 text-[10px] uppercase tracking-[0.2em] text-white/50">Loading Model</p>
+                  <div class="h-0.5 w-full overflow-hidden rounded-full bg-white/10">
+                    <div id="hero-progress" class="h-full w-0 bg-white transition-[width] duration-200"></div>
+                  </div>
+                  <p id="hero-progress-text" class="mt-2 text-[10px] tabular-nums text-white/40"></p>
                 </div>
               </div>
               <div class="grain"></div>
@@ -231,9 +235,13 @@
         <div class="relative h-[52dvh] shrink-0 bg-black lg:h-auto lg:min-h-0 lg:flex-1">
           <div id="case-viewer" class="absolute inset-0 h-full w-full"></div>
           <div id="case-placeholder" class="absolute inset-0 grid place-items-center bg-black">
-            <div class="text-center">
+            <div class="w-48 text-center">
               <div class="mx-auto mb-4 h-8 w-8 animate-spin border border-white/20 border-t-white/80"></div>
-              <p class="text-[10px] uppercase tracking-[0.2em] text-white/50">Loading Model</p>
+              <p class="mb-3 text-[10px] uppercase tracking-[0.2em] text-white/50">Loading Model</p>
+              <div class="h-0.5 w-full overflow-hidden rounded-full bg-white/10">
+                <div id="case-progress" class="h-full w-0 bg-white transition-[width] duration-200"></div>
+              </div>
+              <p id="case-progress-text" class="mt-2 text-[10px] tabular-nums text-white/40"></p>
             </div>
           </div>
           <div class="grain"></div>

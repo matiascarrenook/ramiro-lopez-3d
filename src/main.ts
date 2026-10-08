@@ -2,8 +2,8 @@
 import { cases, type CaseItem } from "./data/cases";
 import { createViewer, type ViewerHandle } from "./viewer";
 
-const asset = (p: string) =>
-  /^(https?:)?\/\//.test(p) ? p : import.meta.env.BASE_URL.replace(/\/$/, "") + "/" + p.replace(/^\//, "");
+const asset = (p?: string) =>
+  !p ? "" : /^(https?:)?\/\//.test(p) ? p : import.meta.env.BASE_URL.replace(/\/$/, "") + "/" + p.replace(/^\//, "");
 
 const casesGrid = document.getElementById("cases-grid") as HTMLDivElement;
 const yearEl = document.getElementById("year") as HTMLSpanElement;
@@ -35,6 +35,17 @@ const casePlaceholder = document.getElementById("case-placeholder") as HTMLDivEl
 
 const heroContainer = document.getElementById("hero-viewer") as HTMLDivElement | null;
 const heroPlaceholder = document.getElementById("hero-placeholder") as HTMLDivElement;
+const heroProgress = document.getElementById("hero-progress") as HTMLDivElement | null;
+const heroProgressText = document.getElementById("hero-progress-text") as HTMLSpanElement | null;
+const caseProgress = document.getElementById("case-progress") as HTMLDivElement | null;
+const caseProgressText = document.getElementById("case-progress-text") as HTMLSpanElement | null;
+
+function setProgress(bar: HTMLDivElement | null, textEl: HTMLSpanElement | null, ratio: number) {
+  if (!bar) return;
+  const pct = Math.min(100, Math.round(ratio * 100));
+  bar.style.width = pct + "%";
+  if (textEl) textEl.textContent = `${pct}%`;
+}
 
 let heroViewer: ViewerHandle | null = null;
 let caseViewer: ViewerHandle | null = null;
@@ -156,6 +167,9 @@ function setHeroModel() {
   });
   heroContainer.addEventListener("viewer-loaded", hideHeroPlaceholder, { once: true });
   heroContainer.addEventListener("viewer-error", hideHeroPlaceholder, { once: true });
+  heroContainer.addEventListener("viewer-progress", ((e: Event) => {
+    setProgress(heroProgress, heroProgressText, (e as CustomEvent).detail ?? 0);
+  }) as EventListener);
   heroContainer.addEventListener("viewer-loaded", () => { (window as any).__viewerLoaded = true; }, { once: true });
   heroContainer.addEventListener("viewer-error", () => { (window as any).__viewerError = true; }, { once: true });
   heroViewer.load(url, coverExposure, sourceCase?.lighting, sourceCase?.roughness, sourceCase?.metalness, sourceCase?.envIntensity, sourceCase?.saturation, sourceCase?.hdri, sourceCase?.contrast);
@@ -236,6 +250,7 @@ function openCase(index: number) {
   // Mostrar placeholder mientras carga el modelo
   casePlaceholder.style.display = "grid";
   casePlaceholder.classList.remove("opacity-0", "pointer-events-none");
+  setProgress(caseProgress, caseProgressText, 0);
 
   // Navegación
   prevCaseBtn.disabled = currentCaseIndex === 0;
@@ -252,6 +267,7 @@ function openCase(index: number) {
     caseContainer.addEventListener("viewer-loaded", handleCaseLoad);
     caseContainer.addEventListener("viewer-error", handleCaseError);
   }
+  caseContainer?.addEventListener("viewer-progress", caseOnProgress);
   caseViewer?.load(c.modelUrl, c.exposure, c.lighting, c.roughness, c.metalness, c.envIntensity, c.saturation, c.hdri, c.contrast);
 }
 
@@ -261,6 +277,10 @@ function handleCaseLoad() {
   setTimeout(() => {
     casePlaceholder.style.display = "none";
   }, 600);
+}
+
+function caseOnProgress(e: Event) {
+  setProgress(caseProgress, caseProgressText, (e as CustomEvent).detail ?? 0);
 }
 
 function handleCaseError() {
@@ -343,3 +363,22 @@ document.addEventListener("keydown", (e) => {
 // Init
 renderCases();
 setHeroModel();
+
+// Precarga los modelos en segundo plano (después de que cargue el hero)
+// para que abrir un caso no espere la descarga completa por primera vez.
+// Secuencial: evita saturar el ancho de banda con 120MB en paralelo.
+async function preloadModels() {
+  await new Promise<void>((resolve) => {
+    if ((window as any).__viewerLoaded) return resolve();
+    heroContainer?.addEventListener("viewer-loaded", () => resolve(), { once: true });
+    heroContainer?.addEventListener("viewer-error", () => resolve(), { once: true });
+    setTimeout(resolve, 15000);
+  });
+  const urls = [...new Set(cases.map((c) => c.modelUrl))];
+  for (const u of urls) {
+    try {
+      await fetch(asset(u), { mode: "cors", priority: "low" });
+    } catch {}
+  }
+}
+window.addEventListener("load", preloadModels, { once: true });

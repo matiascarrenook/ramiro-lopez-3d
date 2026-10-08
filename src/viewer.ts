@@ -247,7 +247,13 @@ if (saturation !== 1) {
         frameModel(model);
         container.dispatchEvent(new CustomEvent("viewer-loaded"));
       },
-      undefined,
+      (e) => {
+        container.dispatchEvent(
+          new CustomEvent("viewer-progress", {
+            detail: e.total ? e.loaded / e.total : 0,
+          })
+        );
+      },
       () => container.dispatchEvent(new CustomEvent("viewer-error")),
     );
   }
