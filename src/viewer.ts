@@ -62,11 +62,11 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.matchMedia("(pointer: coarse)").matches;
 
   const renderer = new THREE.WebGLRenderer({
-    antialias: !isMobile,
+    antialias: !isMobile && window.devicePixelRatio <= 1.5,
     alpha: true,
-    powerPreference: "high-performance",
+    powerPreference: isMobile ? "low-power" : "high-performance",
   });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 1 : 1.75));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, isMobile ? 0.85 : 1.25));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = options.exposure ?? DEFAULT_EXPOSURE;
@@ -136,10 +136,10 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
 
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
-  controls.dampingFactor = 0.08;
+  controls.dampingFactor = isMobile ? 0.12 : 0.08;
   controls.enablePan = false;
   controls.autoRotate = options.autoRotate ?? true;
-  controls.autoRotateSpeed = options.autoRotateSpeed ?? 1.4;
+  controls.autoRotateSpeed = options.autoRotateSpeed ?? (isMobile ? 0.6 : 1.4);
   controls.minPolarAngle = 0.15;
   controls.maxPolarAngle = Math.PI - 0.15;
 
@@ -259,6 +259,10 @@ if (saturation !== 1) {
         });
         scene.add(model);
         current = model;
+        current.traverse((child) => {
+          const mesh = child as THREE.Mesh;
+          if (mesh.isMesh) mesh.frustumCulled = true;
+        });
         frameModel(model);
         container.dispatchEvent(new CustomEvent("viewer-loaded"));
       },

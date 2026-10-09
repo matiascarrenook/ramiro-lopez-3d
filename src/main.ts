@@ -208,16 +208,28 @@ function openCase(index: number) {
     galleryGrid.innerHTML = "";
 
     c.gallery.forEach((img: any) => {
+      const item =
+        typeof img === "string"
+          ? { src: img, thumbnail: img, alt: c.title }
+          : img && typeof img === "object"
+            ? {
+                src: img.src || img.full || img.thumbnail || "",
+                thumbnail: img.thumbnail || img.src || img.full || "",
+                alt: img.alt ?? c.title,
+              }
+            : { src: "", thumbnail: "", alt: c.title };
       const btn = document.createElement("button");
-      btn.className =
-        "group relative aspect-square overflow-hidden rounded-xl border border-white/10 bg-white/5 focus-ring transition-transform hover:scale-[1.01]";
+      btn.type = "button";
+      btn.className = "gallery-brutal group overflow-hidden";
+      const thumbSrc = asset(item.thumbnail || item.src);
+      const fullSrc = asset(item.src || item.thumbnail);
       btn.innerHTML = `
         <img
-          src="${asset(img.thumbnail || img.src)}"
-          alt="${img.alt}"
+          src="${thumbSrc}"
+          alt="${item.alt ?? c.title}"
           loading="lazy"
           decoding="async"
-          class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.04]"
+          class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
         <div class="absolute inset-0 bg-bg/20 group-hover:bg-bg/10 transition-colors"></div>
         <div class="absolute bottom-1 right-1 rounded-full bg-bg/90 border border-white/15 px-1.5 py-0.5 text-[10px] backdrop-blur">
@@ -225,7 +237,7 @@ function openCase(index: number) {
         </div>
       `;
       btn.addEventListener("click", () => {
-        window.open(img.src, "_blank", "noopener,noreferrer");
+        if (fullSrc) window.open(fullSrc, "_blank", "noopener,noreferrer");
       });
       galleryGrid.appendChild(btn);
     });
@@ -275,8 +287,9 @@ function openCase(index: number) {
     document.body.style.overflow = "hidden";
   }
 
+  const isMobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.matchMedia("(pointer: coarse)").matches;
   if (!caseViewer && caseContainer) {
-    caseViewer = createViewer(caseContainer, { autoRotate: true, exposure: c.exposure, lighting: c.lighting, roughness: c.roughness, metalness: c.metalness, envIntensity: c.envIntensity, saturation: c.saturation });
+    caseViewer = createViewer(caseContainer, { autoRotate: !isMobileUA, autoRotateSpeed: isMobileUA ? 0.6 : 1.2, exposure: c.exposure, lighting: c.lighting, roughness: c.roughness, metalness: c.metalness, envIntensity: c.envIntensity, saturation: c.saturation });
     caseContainer.addEventListener("viewer-loaded", handleCaseLoad);
     caseContainer.addEventListener("viewer-error", handleCaseError);
   }
