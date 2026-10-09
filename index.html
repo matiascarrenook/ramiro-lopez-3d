@@ -234,6 +234,18 @@
       <div class="relative flex min-h-0 flex-1 flex-col lg:flex-row">
         <div class="relative h-[52dvh] shrink-0 bg-black lg:h-auto lg:min-h-0 lg:flex-1">
           <div id="case-viewer" class="absolute inset-0 h-full w-full"></div>
+          <div id="mobile-carousel" class="absolute inset-0 hidden h-full w-full overflow-hidden bg-black">
+            <img id="carousel-img" src="" alt="The Maxx turntable" class="h-full w-full object-contain" loading="eager" />
+            <div class="absolute inset-x-0 bottom-4 flex items-center justify-center gap-2 px-4">
+              <button id="carousel-prev" class="btn-brutal px-3 py-2 text-xs" aria-label="Anterior">
+                <i class="bi bi-chevron-left"></i>
+              </button>
+              <div id="carousel-dots" class="flex max-w-[80vw] flex-wrap items-center justify-center gap-1.5 rounded-full border border-white/15 bg-black/70 px-2 py-1 backdrop-blur"></div>
+              <button id="carousel-next" class="btn-brutal px-3 py-2 text-xs" aria-label="Siguiente">
+                <i class="bi bi-chevron-right"></i>
+              </button>
+            </div>
+          </div>
           <div id="case-placeholder" class="absolute inset-0 grid place-items-center bg-black">
             <div class="w-48 text-center">
               <div class="mx-auto mb-4 h-8 w-8 animate-spin border border-white/20 border-t-white/80"></div>

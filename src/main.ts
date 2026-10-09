@@ -40,6 +40,12 @@ const heroProgressText = document.getElementById("hero-progress-text") as HTMLSp
 const caseProgress = document.getElementById("case-progress") as HTMLDivElement | null;
 const caseProgressText = document.getElementById("case-progress-text") as HTMLSpanElement | null;
 
+const mobileCarousel = document.getElementById("mobile-carousel") as HTMLDivElement | null;
+const carouselImg = document.getElementById("carousel-img") as HTMLImageElement | null;
+const carouselPrev = document.getElementById("carousel-prev") as HTMLButtonElement | null;
+const carouselNext = document.getElementById("carousel-next") as HTMLButtonElement | null;
+const carouselDots = document.getElementById("carousel-dots") as HTMLDivElement | null;
+
 function setProgress(bar: HTMLDivElement | null, textEl: HTMLSpanElement | null, ratio: number) {
   if (!bar) return;
   const pct = Math.min(100, Math.round(ratio * 100));
@@ -52,6 +58,10 @@ let caseViewer: ViewerHandle | null = null;
 
 let currentCaseIndex = 0;
 let infoOpen = true;
+
+const MAXX_SEQ = Array.from({ length: 16 }, (_, i) => `/img/gallery/the-maxx-seq-${String(i + 1).padStart(2, "0")}.webp`);
+let carouselIdx = 0;
+let carouselTimer: number | null = null;
 
 yearEl.textContent = new Date().getFullYear().toString();
 
@@ -288,6 +298,76 @@ function openCase(index: number) {
   }
 
   const isMobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.matchMedia("(pointer: coarse)").matches;
+
+  // Carousel for mobile - The Maxx
+  if (mobileCarousel) mobileCarousel.classList.add("hidden");
+  if (carouselTimer !== null) {
+    clearInterval(carouselTimer);
+    carouselTimer = null;
+  }
+
+  if (isMobileUA && c.title === "The Maxx") {
+    if (mobileCarousel) {
+      mobileCarousel.classList.remove("hidden");
+      caseContainer?.style.setProperty("display", "none");
+      casePlaceholder.style.display = "none";
+    }
+    carouselIdx = 0;
+    if (carouselDots) {
+      carouselDots.innerHTML = "";
+      MAXX_SEQ.forEach((_, i) => {
+        const dot = document.createElement("button");
+        dot.className = "h-1.5 w-1.5 rounded-full border border-white/40 " + (i === 0 ? "bg-white" : "bg-white/30");
+        dot.setAttribute("aria-label", `Frame ${i + 1}`);
+        dot.addEventListener("click", () => {
+          carouselIdx = i;
+          updateCarousel();
+          if (carouselTimer !== null) {
+            clearInterval(carouselTimer);
+            carouselTimer = null;
+          }
+        });
+        carouselDots.appendChild(dot);
+      });
+    }
+    const updateCarousel = () => {
+      if (!carouselImg) return;
+      carouselImg.src = asset(MAXX_SEQ[carouselIdx]);
+      if (carouselDots) {
+        Array.from(carouselDots.children).forEach((d, i) => {
+          (d as HTMLElement).className = "h-1.5 w-1.5 rounded-full border border-white/40 " + (i === carouselIdx ? "bg-white" : "bg-white/30");
+        });
+      }
+    };
+    updateCarousel();
+    if (carouselPrev) {
+      carouselPrev.onclick = () => {
+        carouselIdx = (carouselIdx - 1 + MAXX_SEQ.length) % MAXX_SEQ.length;
+        updateCarousel();
+        if (carouselTimer !== null) {
+          clearInterval(carouselTimer);
+          carouselTimer = null;
+        }
+      };
+    }
+    if (carouselNext) {
+      carouselNext.onclick = () => {
+        carouselIdx = (carouselIdx + 1) % MAXX_SEQ.length;
+        updateCarousel();
+        if (carouselTimer !== null) {
+          clearInterval(carouselTimer);
+          carouselTimer = null;
+        }
+      };
+    }
+    carouselTimer = window.setInterval(() => {
+      carouselIdx = (carouselIdx + 1) % MAXX_SEQ.length;
+      updateCarousel();
+    }, 180);
+    return;
+  }
+
+  if (caseContainer) caseContainer.style.removeProperty("display");
   if (!caseViewer && caseContainer) {
     caseViewer = createViewer(caseContainer, { autoRotate: !isMobileUA, autoRotateSpeed: isMobileUA ? 0.6 : 1.2, exposure: c.exposure, lighting: c.lighting, roughness: c.roughness, metalness: c.metalness, envIntensity: c.envIntensity, saturation: c.saturation });
     caseContainer.addEventListener("viewer-loaded", handleCaseLoad);
