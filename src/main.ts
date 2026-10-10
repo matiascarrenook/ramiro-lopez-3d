@@ -42,9 +42,6 @@ const caseProgressText = document.getElementById("case-progress-text") as HTMLSp
 
 const mobileCarousel = document.getElementById("mobile-carousel") as HTMLDivElement | null;
 const carouselImg = document.getElementById("carousel-img") as HTMLImageElement | null;
-const carouselPrev = document.getElementById("carousel-prev") as HTMLButtonElement | null;
-const carouselNext = document.getElementById("carousel-next") as HTMLButtonElement | null;
-const carouselDots = document.getElementById("carousel-dots") as HTMLDivElement | null;
 
 function setProgress(bar: HTMLDivElement | null, textEl: HTMLSpanElement | null, ratio: number) {
   if (!bar) return;
@@ -313,57 +310,15 @@ function openCase(index: number) {
       casePlaceholder.style.display = "none";
     }
     carouselIdx = 0;
-    if (carouselDots) {
-      carouselDots.innerHTML = "";
-      MAXX_SEQ.forEach((_, i) => {
-        const dot = document.createElement("button");
-        dot.className = "h-1.5 w-1.5 rounded-full border border-white/40 " + (i === 0 ? "bg-white" : "bg-white/30");
-        dot.setAttribute("aria-label", `Frame ${i + 1}`);
-        dot.addEventListener("click", () => {
-          carouselIdx = i;
-          updateCarousel();
-          if (carouselTimer !== null) {
-            clearInterval(carouselTimer);
-            carouselTimer = null;
-          }
-        });
-        carouselDots.appendChild(dot);
-      });
-    }
     const updateCarousel = () => {
       if (!carouselImg) return;
       carouselImg.src = asset(MAXX_SEQ[carouselIdx]);
-      if (carouselDots) {
-        Array.from(carouselDots.children).forEach((d, i) => {
-          (d as HTMLElement).className = "h-1.5 w-1.5 rounded-full border border-white/40 " + (i === carouselIdx ? "bg-white" : "bg-white/30");
-        });
-      }
     };
     updateCarousel();
-    if (carouselPrev) {
-      carouselPrev.onclick = () => {
-        carouselIdx = (carouselIdx - 1 + MAXX_SEQ.length) % MAXX_SEQ.length;
-        updateCarousel();
-        if (carouselTimer !== null) {
-          clearInterval(carouselTimer);
-          carouselTimer = null;
-        }
-      };
-    }
-    if (carouselNext) {
-      carouselNext.onclick = () => {
-        carouselIdx = (carouselIdx + 1) % MAXX_SEQ.length;
-        updateCarousel();
-        if (carouselTimer !== null) {
-          clearInterval(carouselTimer);
-          carouselTimer = null;
-        }
-      };
-    }
     carouselTimer = window.setInterval(() => {
       carouselIdx = (carouselIdx + 1) % MAXX_SEQ.length;
       updateCarousel();
-    }, 180);
+    }, 160);
     return;
   }
 

@@ -1,0 +1,26 @@
+<svg width="1200" height="1500" viewBox="0 0 1200 1500" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="g1" cx="50%" cy="20%" r="80%">
+      <stop stop-color="#4D7CFF" stop-opacity="0.25"/>
+      <stop stop-color="#050505" offset="100%"/>
+    </radialGradient>
+    <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#4D7CFF"/>
+      <stop stop-color="#00E0FF" offset="1"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="1500" fill="#050505"/>
+  <rect width="1200" height="1500" fill="url(#g1)"/>
+  <circle cx="320" cy="420" r="220" fill="#4D7CFF" opacity="0.18" filter="blur(60)"/>
+  <circle cx="880" cy="360" r="180" fill="#00E0FF" opacity="0.16" filter="blur(60)"/>
+  <g transform="translate(600,750)">
+    <path d="M -180,-160 C -240,-40 -160,160 0,160 C 160,160 240,-40 180,-160 C 120,-240 0,-280 -60,-240 C -120,-200 -180,-160 -180,-160 Z" fill="url(#g2)" opacity="0.22"/>
+    <circle cx="0" cy="-40" r="120" fill="url(#g2)" opacity="0.28"/>
+    <circle cx="-40" cy="-80" r="28" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="40" cy="-80" r="28" fill="#FFFFFF" opacity="0.9"/>
+    <circle cx="-36" cy="-74" r="14" fill="#050505"/>
+    <circle cx="44" cy="-74" r="14" fill="#050505"/>
+  </g>
+  <text x="600" y="1320" text-anchor="middle" font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="64" font-weight="800" fill="#FFFFFF">FORMA ORGÁNICA</text>
+  <text x="600" y="1385" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="30" fill="#A9B3C1">Diseño Orgánico · Escultura</text>
+</svg>
