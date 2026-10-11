@@ -303,7 +303,7 @@ function openCase(index: number) {
     carouselTimer = null;
   }
 
-  if (isMobileUA && c.title === "The Maxx") {
+  if (isMobileUA && c.title === "Maxx Render") {
     if (mobileCarousel) {
       mobileCarousel.classList.remove("hidden");
       caseContainer?.style.setProperty("display", "none");
@@ -319,6 +319,15 @@ function openCase(index: number) {
       carouselIdx = (carouselIdx + 1) % MAXX_SEQ.length;
       updateCarousel();
     }, 160);
+    return;
+  }
+
+  if (isMobileUA && c.title === "The Maxx") {
+    if (mobileCarousel) mobileCarousel.classList.add("hidden");
+    caseContainer?.style.setProperty("display", "none");
+    casePlaceholder.style.display = "grid";
+    casePlaceholder.classList.remove("opacity-0", "pointer-events-none");
+    setProgress(caseProgress, caseProgressText, 100);
     return;
   }
 
