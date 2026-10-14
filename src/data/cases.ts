@@ -20,8 +20,15 @@
   hdri?: string;
   contrast?: boolean;
   gallery?: string[];
+  carousel?: string[];
   links?: Array<{ label: string; url: string; icon: string }>;
 }
+
+const seq = (slug: string, count: number) =>
+  Array.from(
+    { length: count },
+    (_, i) => `/img/gallery/${slug}-seq-${String(i + 1).padStart(2, "0")}.webp`
+  );
 
 export const cases: CaseItem[] = [
   {
@@ -61,6 +68,7 @@ export const cases: CaseItem[] = [
     focus: "Carácter y volumen",
     modelUrl: "/models/maxx-render.glb",
     coverImage: "/img/cover-maxx-render.png",
+    carousel: seq("maxx-render", 16),
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -83,6 +91,7 @@ export const cases: CaseItem[] = [
     saturation: 0.61,
     modelUrl: "/models/zareck.glb",
     coverImage: "/img/cover-zareck.png",
+    carousel: seq("zareck", 16),
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -105,6 +114,7 @@ export const cases: CaseItem[] = [
     saturation: 0.7,
     modelUrl: "/models/mazinger.glb",
     coverImage: "/img/cover-mazinger.png",
+    carousel: seq("mazinger", 16),
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -129,6 +139,7 @@ export const cases: CaseItem[] = [
     contrast: true,
     modelUrl: "/models/betty-boop.glb",
     coverImage: "/img/cover-betty-boop.png",
+    carousel: seq("betty", 10),
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -147,6 +158,7 @@ export const cases: CaseItem[] = [
     focus: "Vestuario y volumen",
     modelUrl: "/models/parka.glb",
     coverImage: "/img/cover-parka.png",
+    carousel: seq("parka", 10),
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -171,6 +183,7 @@ export const cases: CaseItem[] = [
     contrast: true,
     modelUrl: "/models/starfire.glb",
     coverImage: "/img/cover-starfire.png",
+    carousel: seq("starfire", 16),
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },

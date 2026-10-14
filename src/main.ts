@@ -56,7 +56,6 @@ let caseViewer: ViewerHandle | null = null;
 let currentCaseIndex = 0;
 let infoOpen = true;
 
-const MAXX_SEQ = Array.from({ length: 16 }, (_, i) => `/img/gallery/the-maxx-seq-${String(i + 1).padStart(2, "0")}.webp`);
 let carouselIdx = 0;
 let carouselTimer: number | null = null;
 
@@ -304,14 +303,15 @@ function openCase(index: number) {
 
   const isMobileUA = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) || window.matchMedia("(pointer: coarse)").matches;
 
-  // Carousel for mobile - The Maxx
+  // Carrusel en móvil: cada caso usa su propia secuencia de frames
   if (mobileCarousel) mobileCarousel.classList.add("hidden");
   if (carouselTimer !== null) {
     clearInterval(carouselTimer);
     carouselTimer = null;
   }
 
-  if (isMobileUA && c.title === "Maxx Render") {
+  if (isMobileUA && c.carousel && c.carousel.length > 0) {
+    const frames = c.carousel;
     if (mobileCarousel) {
       mobileCarousel.classList.remove("hidden");
       caseContainer?.style.setProperty("display", "none");
@@ -320,17 +320,22 @@ function openCase(index: number) {
     carouselIdx = 0;
     const updateCarousel = () => {
       if (!carouselImg) return;
-      carouselImg.src = asset(MAXX_SEQ[carouselIdx]);
+      carouselImg.src = asset(frames[carouselIdx]);
     };
+    frames.forEach((f) => {
+      const pre = new Image();
+      pre.src = asset(f);
+    });
     updateCarousel();
     carouselTimer = window.setInterval(() => {
-      carouselIdx = (carouselIdx + 1) % MAXX_SEQ.length;
+      carouselIdx = (carouselIdx + 1) % frames.length;
       updateCarousel();
     }, 160);
     return;
   }
 
-  if (isMobileUA && c.title === "The Maxx") {
+  if (isMobileUA) {
+    // Casos sin carrusel (p. ej. The Maxx): placeholder en móvil
     if (mobileCarousel) mobileCarousel.classList.add("hidden");
     caseContainer?.style.setProperty("display", "none");
     casePlaceholder.style.display = "grid";
