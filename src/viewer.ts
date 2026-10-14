@@ -239,7 +239,14 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
             mat.side = THREE.DoubleSide;
             mat.envMapIntensity = envInt;
             if (mat.metalness >= 0.5 && mat.roughness > roughLimit) mat.roughness = roughLimit;
-            if (typeof metalTarget === "number") mat.metalness = metalTarget;
+            if (typeof metalTarget === "number") {
+              mat.metalness = metalTarget;
+              if (metalTarget <= 0.05) {
+                const phys = mat as unknown as { clearcoat?: number; transmission?: number };
+                if (phys.clearcoat !== undefined) phys.clearcoat = 0;
+                if (phys.transmission !== undefined) phys.transmission = 0;
+              }
+            }
             mat.vertexColors = !!mesh.geometry.getAttribute("color");
             mat.needsUpdate = true;
 if (saturation !== 1) {
