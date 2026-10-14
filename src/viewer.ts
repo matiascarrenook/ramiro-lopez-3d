@@ -73,7 +73,10 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   renderer.setSize(width, height);
   renderer.domElement.style.display = "block";
   renderer.domElement.style.touchAction = "none";
+  renderer.domElement.style.userSelect = "none";
   renderer.domElement.draggable = false;
+  container.style.userSelect = "none";
+  container.addEventListener("dragstart", (e) => e.preventDefault());
   container.appendChild(renderer.domElement);
 
   renderer.domElement.addEventListener(
