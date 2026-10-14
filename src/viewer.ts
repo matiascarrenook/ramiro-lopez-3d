@@ -73,6 +73,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   renderer.setSize(width, height);
   renderer.domElement.style.display = "block";
   renderer.domElement.style.touchAction = "none";
+  renderer.domElement.draggable = false;
   container.appendChild(renderer.domElement);
 
   renderer.domElement.addEventListener(
