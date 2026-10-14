@@ -83,11 +83,6 @@ export const cases: CaseItem[] = [
     saturation: 0.61,
     modelUrl: "/models/zareck.glb",
     coverImage: "/img/cover-zareck.png",
-    gallery: [
-      "/img/gallery/zareck-01.webp",
-      "/img/gallery/zareck-02.webp",
-      "/img/gallery/zareck-03.webp",
-    ],
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -110,11 +105,6 @@ export const cases: CaseItem[] = [
     saturation: 0.7,
     modelUrl: "/models/mazinger.glb",
     coverImage: "/img/cover-mazinger.png",
-    gallery: [
-      "/img/gallery/mazinger-01.webp",
-      "/img/gallery/mazinger-02.webp",
-      "/img/gallery/mazinger-03.webp",
-    ],
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -139,11 +129,6 @@ export const cases: CaseItem[] = [
     contrast: true,
     modelUrl: "/models/betty-boop.glb",
     coverImage: "/img/cover-betty-boop.png",
-    gallery: [
-      "/img/gallery/betty-01.webp",
-      "/img/gallery/betty-02.webp",
-      "/img/gallery/betty-03.webp",
-    ],
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -162,11 +147,6 @@ export const cases: CaseItem[] = [
     focus: "Vestuario y volumen",
     modelUrl: "/models/parka.glb",
     coverImage: "/img/cover-parka.png",
-    gallery: [
-      "/img/gallery/parka-01.webp",
-      "/img/gallery/parka-02.webp",
-      "/img/gallery/parka-03.webp",
-    ],
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
@@ -191,11 +171,6 @@ export const cases: CaseItem[] = [
     contrast: true,
     modelUrl: "/models/starfire.glb",
     coverImage: "/img/cover-starfire.png",
-    gallery: [
-      "/img/gallery/starfire-01.webp",
-      "/img/gallery/starfire-02.webp",
-      "/img/gallery/starfire-03.webp",
-    ],
     links: [
       { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
       { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },

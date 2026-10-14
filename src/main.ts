@@ -236,14 +236,22 @@ function openCase(index: number) {
           alt="${item.alt ?? c.title}"
           loading="lazy"
           decoding="async"
-          class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          draggable="false"
+          class="h-full w-full select-none object-cover transition-transform duration-700 ease-out group-hover:scale-105"
         />
         <div class="absolute inset-0 bg-bg/20 group-hover:bg-bg/10 transition-colors"></div>
         <div class="absolute bottom-1 right-1 rounded-full bg-bg/90 border border-white/15 px-1.5 py-0.5 text-[10px] backdrop-blur">
           <i class="bi bi-arrows-fullscreen"></i>
         </div>
       `;
-      btn.addEventListener("click", () => {
+      let downX = 0;
+      let downY = 0;
+      btn.addEventListener("pointerdown", (e) => {
+        downX = e.clientX;
+        downY = e.clientY;
+      });
+      btn.addEventListener("click", (e) => {
+        if (Math.hypot(e.clientX - downX, e.clientY - downY) > 8) return;
         if (fullSrc) window.open(fullSrc, "_blank", "noopener,noreferrer");
       });
       galleryGrid.appendChild(btn);
