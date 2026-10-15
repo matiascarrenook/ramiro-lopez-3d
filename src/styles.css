@@ -234,6 +234,10 @@
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
   }
 
+  .field {
+    @apply w-full border border-white/20 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/50;
+  }
+
   .tag {
     @apply inline-flex items-center border border-white/15 bg-black/60 px-2.5 py-0.5 text-[10px] uppercase tracking-[0.16em] text-white/80 backdrop-blur-sm;
     clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 100%, 6px 100%);

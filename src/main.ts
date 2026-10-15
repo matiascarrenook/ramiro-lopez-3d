@@ -443,6 +443,59 @@ document.addEventListener("keydown", (e) => {
   }
 });
 
+// Formulario de contacto (FormSubmit)
+const contactForm = document.getElementById("contact-form-el") as HTMLFormElement | null;
+const contactStatus = document.getElementById("contact-status") as HTMLParagraphElement | null;
+const contactSubmit = document.getElementById("contact-submit") as HTMLButtonElement | null;
+
+contactForm?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  if (!contactForm.reportValidity()) return;
+
+  const data = new FormData(contactForm);
+  const body = new URLSearchParams();
+  data.forEach((value, key) => body.append(key, value as string));
+
+  const original = contactSubmit?.innerHTML ?? "";
+  if (contactSubmit) {
+    contactSubmit.disabled = true;
+    contactSubmit.innerHTML = `<i class="bi bi-hourglass-split"></i> Enviando...`;
+  }
+  if (contactStatus) {
+    contactStatus.textContent = "";
+    contactStatus.className = "text-xs text-white/50";
+  }
+
+  try {
+    const res = await fetch(contactForm.action, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body,
+    });
+    const json = (await res.json().catch(() => ({}))) as { success?: string | boolean };
+    if (res.ok && json.success !== "false" && json.success !== false) {
+      contactForm.reset();
+      if (contactStatus) {
+        contactStatus.textContent = "¡Gracias! Tu mensaje fue enviado. Te responderé pronto.";
+        contactStatus.className = "text-xs text-emerald-400";
+      }
+    } else {
+      throw new Error("submit failed");
+    }
+  } catch {
+    if (contactStatus) {
+      contactStatus.textContent =
+        "No se pudo enviar. Probá de nuevo o escribime por WhatsApp.";
+      contactStatus.className = "text-xs text-red-400";
+    }
+  } finally {
+    if (contactSubmit) {
+      contactSubmit.disabled = false;
+      contactSubmit.innerHTML = original;
+    }
+  }
+});
+
 // Init
 renderCases();
 setHeroModel();
