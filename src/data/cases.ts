@@ -169,10 +169,10 @@ export const cases: CaseItem[] = [
     category: "Personaje",
     year: 2026,
     description:
-      "Personaje de energía y color. Estudio de proporciones donde el cabello funciona como una masa fluida, integrado en una escena completa lista para orbitar.",
+      "Puedo aprender tu idioma con solo un beso...",
     tags: ["Personaje", "Escena", "Formas Fluidas"],
-    software: ["Blender", "ZBrush"],
-    focus: "Personaje 3D",
+    software: ["Blender"],
+    focus: "fidelity/3D Print",
     metalness: 0.0,
     roughness: 0.9995,
     envIntensity: 0.01,
