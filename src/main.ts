@@ -214,13 +214,14 @@ function openCase(index: number) {
   modalFocus.textContent = c.focus || "Diseño orgánico";
   modalFormat.textContent = c.format || "GLB";
 
-  // Galería
-  if (c.gallery && c.gallery.length > 0) {
+  // Galería: renders del caso. Si no hay galería propia, usa los frames del carrusel.
+  const gallery = c.gallery && c.gallery.length > 0 ? c.gallery : c.carousel ?? [];
+  if (gallery.length > 0) {
     gallerySection.classList.remove("hidden");
-    galleryCount.textContent = `${c.gallery.length} imagen${c.gallery.length === 1 ? "" : "es"}`;
+    galleryCount.textContent = `${gallery.length} imagen${gallery.length === 1 ? "" : "es"}`;
     galleryGrid.innerHTML = "";
 
-    c.gallery.forEach((img: any) => {
+    gallery.forEach((img: any) => {
       const item =
         typeof img === "string"
           ? { src: img, thumbnail: img, alt: c.title }
