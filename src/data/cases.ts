@@ -125,7 +125,7 @@ export const cases: CaseItem[] = [
       "Yeah, you still got it!",
     tags: ["Personaje", "Cartoon", "Escena"],
     software: ["Blender"],
-    focus: "3D print",
+    focus: "Fidelity/3D print",
     format: "STL",
     metalness: 0.0,
     roughness: 0.9995,
