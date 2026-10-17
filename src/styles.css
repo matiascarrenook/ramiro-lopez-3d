@@ -234,6 +234,11 @@
     clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 0 100%);
   }
 
+  .gallery-brutal {
+    @apply relative block w-full overflow-hidden bg-black;
+    aspect-ratio: 1 / 1;
+  }
+
   .field {
     @apply w-full border border-white/20 bg-white/[0.03] px-3 py-2 text-sm text-white outline-none transition-colors placeholder:text-white/30 focus:border-white/50;
   }
