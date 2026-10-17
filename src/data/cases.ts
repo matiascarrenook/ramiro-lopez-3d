@@ -148,10 +148,10 @@ export const cases: CaseItem[] = [
     category: "Personaje",
     year: 2026,
     description:
-      "Personaje contemporáneo. Diseño de vestuario, texturas y estudio de silueta en escena completa lista para orbitar.",
+      "A todos les llega su turno con la parka",
     tags: ["Personaje", "Vestuario", "Escena"],
-    software: ["Blender", "ZBrush"],
-    focus: "Vestuario y volumen",
+    software: ["Blender"],
+    focus: "Realism/Render",
     metalness: 0.0,
     roughness: 0.42,
     envIntensity: 0.55,
