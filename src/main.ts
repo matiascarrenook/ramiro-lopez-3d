@@ -97,7 +97,7 @@ function renderCases() {
     card.innerHTML = `
       <div class="thumb-brutal aspect-[4/5]">
         <img
-          src="${asset(c.coverImage)}"
+          src="${asset(c.gallery?.[0] ?? c.carousel?.[0] ?? c.coverImage)}"
           alt="${c.title}"
           loading="lazy"
           decoding="async"
