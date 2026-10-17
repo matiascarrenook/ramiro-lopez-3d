@@ -8,6 +8,7 @@
   tags: string[];
   software: string[];
   focus: string;
+  format?: string;
   exposure?: number;
   coverExposure?: number;
   lighting?: number;
@@ -30,6 +31,11 @@ const seq = (slug: string, count: number) =>
     (_, i) => `/img/gallery/${slug}-seq-${String(i + 1).padStart(2, "0")}.webp`
   );
 
+const socialLinks = [
+  { label: "Instagram", url: "https://www.instagram.com/lopez_sculpts/", icon: "instagram" },
+  { label: "ArtStation", url: "https://www.artstation.com/ramiro_lopez", icon: "artstation" },
+];
+
 export const cases: CaseItem[] = [
   {
     id: "01",
@@ -50,10 +56,7 @@ export const cases: CaseItem[] = [
       "/img/gallery/the-maxx-02.webp",
       "/img/gallery/the-maxx-03.webp",
     ],
-    links: [
-      { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
-      { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
-    ],
+    links: socialLinks,
   },
   {
     id: "02",
@@ -69,10 +72,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/maxx-render.glb",
     coverImage: "/img/cover-maxx-render.png",
     carousel: seq("maxx-render", 16),
-    links: [
-      { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
-      { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
-    ],
+    links: socialLinks,
   },
   {
     id: "03",
@@ -92,10 +92,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/zareck.glb",
     coverImage: "/img/cover-zareck.png",
     carousel: seq("zareck", 16),
-    links: [
-      { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
-      { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
-    ],
+    links: socialLinks,
   },
   {
     id: "04",
@@ -115,22 +112,20 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/mazinger.glb",
     coverImage: "/img/cover-mazinger.png",
     carousel: seq("mazinger", 16),
-    links: [
-      { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
-      { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
-    ],
+    links: socialLinks,
   },
   {
     id: "05",
     title: "Betty Boop",
     slug: "betty-boop",
     category: "Personaje",
-    year: 2026,
+    year: 2025,
     description:
-      "Revisión estilizada de un ícono del cartoon. Silueta clara y formas redondeadas, presentada como escena completa lista para orbitar. El archivo original no conserva color por vértice.",
+      "Yeah, you still got it!",
     tags: ["Personaje", "Cartoon", "Escena"],
-    software: ["Blender", "ZBrush"],
-    focus: "Personaje 3D",
+    software: ["Blender"],
+    focus: "3D print",
+    format: "STL",
     metalness: 0.0,
     roughness: 0.9995,
     envIntensity: 0.01,
@@ -140,10 +135,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/betty-boop.glb",
     coverImage: "/img/cover-betty-boop.png",
     carousel: seq("betty", 10),
-    links: [
-      { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
-      { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
-    ],
+    links: socialLinks,
   },
   {
     id: "06",
@@ -164,10 +156,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/parka.glb",
     coverImage: "/img/cover-parka.png",
     carousel: seq("parka", 10),
-    links: [
-      { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
-      { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
-    ],
+    links: socialLinks,
   },
   {
     id: "07",
@@ -189,9 +178,6 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/starfire.glb",
     coverImage: "/img/cover-starfire.png",
     carousel: seq("starfire", 16),
-    links: [
-      { label: "Blender", url: "https://www.blender.org/", icon: "bi-box" },
-      { label: "ZBrush", url: "https://pixologic.com/", icon: "bi-brush" },
-    ],
+    links: socialLinks,
   },
 ];

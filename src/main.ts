@@ -22,6 +22,7 @@ const modalDescription = document.getElementById("modal-description") as HTMLPar
 const modalYear = document.getElementById("modal-year") as HTMLElement;
 const modalSoftware = document.getElementById("modal-software") as HTMLElement;
 const modalFocus = document.getElementById("modal-focus") as HTMLElement;
+const modalFormat = document.getElementById("modal-format") as HTMLElement;
 
 const gallerySection = document.getElementById("gallery-section") as HTMLDivElement;
 const galleryGrid = document.getElementById("gallery-grid") as HTMLDivElement;
@@ -206,6 +207,7 @@ function openCase(index: number) {
   modalYear.textContent = c.year.toString();
   modalSoftware.textContent = c.software.join(" · ");
   modalFocus.textContent = c.focus || "Diseño orgánico";
+  modalFormat.textContent = c.format || "GLB";
 
   // Galería
   if (c.gallery && c.gallery.length > 0) {
