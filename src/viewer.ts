@@ -153,6 +153,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   loader.setDRACOLoader(draco);
 
   let current: THREE.Object3D | null = null;
+  let loadToken = 0;
 
   function disposeObject(root: THREE.Object3D) {
     root.traverse((child) => {
@@ -188,6 +189,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   }
 
   function load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean) {
+    const token = ++loadToken;
     url = resolveAsset(url) ?? "";
     hdriArg = resolveAsset(hdriArg);
     if (typeof exposure === "number") renderer.toneMappingExposure = exposure;
@@ -205,12 +207,18 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
       new RGBELoader().load(
         hdriArg,
         (hdr) => {
+          if (token !== loadToken) {
+            hdr.dispose();
+            return;
+          }
           hdriRT = pmrem.fromEquirectangular(hdr);
           scene.environment = hdriRT.texture;
           hdr.dispose();
         },
         undefined,
-        () => scene.environment = defaultEnv,
+        () => {
+          if (token === loadToken) scene.environment = defaultEnv;
+        },
       );
     } else {
       scene.environment = defaultEnv;
@@ -229,6 +237,11 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
     loader.load(
       url,
       (gltf) => {
+        // Si ya se pidió otro caso mientras cargaba, descartar este modelo
+        if (token !== loadToken) {
+          disposeObject(gltf.scene);
+          return;
+        }
         const model = gltf.scene;
         model.traverse((child) => {
           const mesh = child as THREE.Mesh;
@@ -278,13 +291,16 @@ if (saturation !== 1) {
         container.dispatchEvent(new CustomEvent("viewer-loaded"));
       },
       (e) => {
+        if (token !== loadToken) return;
         container.dispatchEvent(
           new CustomEvent("viewer-progress", {
             detail: e.total ? e.loaded / e.total : 0,
           })
         );
       },
-      () => container.dispatchEvent(new CustomEvent("viewer-error")),
+      () => {
+        if (token === loadToken) container.dispatchEvent(new CustomEvent("viewer-error"));
+      },
     );
   }
 
