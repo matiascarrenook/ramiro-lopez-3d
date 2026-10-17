@@ -200,6 +200,15 @@ function setHeroModel() {
   heroViewer.load(url, coverExposure, sourceCase?.lighting, sourceCase?.roughness, sourceCase?.metalness, sourceCase?.envIntensity, sourceCase?.saturation, sourceCase?.hdri, sourceCase?.contrast);
 }
 
+function pickSpread<T>(arr: T[], count: number): T[] {
+  if (arr.length <= count) return arr.slice();
+  const out: T[] = [];
+  for (let i = 0; i < count; i++) {
+    out.push(arr[Math.floor((i * arr.length) / count)]);
+  }
+  return out;
+}
+
 function openCase(index: number) {
   currentCaseIndex = index;
   const c = cases[currentCaseIndex];
@@ -214,8 +223,8 @@ function openCase(index: number) {
   modalFocus.textContent = c.focus || "Diseño orgánico";
   modalFormat.textContent = c.format || "GLB";
 
-  // Galería: renders del caso. Si no hay galería propia, usa los frames del carrusel.
-  const gallery = c.gallery && c.gallery.length > 0 ? c.gallery : c.carousel ?? [];
+  // Galería: 3 renders del caso (o los definidos en gallery). Si no, toma 3 frames repartidos del carrusel.
+  const gallery = c.gallery && c.gallery.length > 0 ? c.gallery : pickSpread(c.carousel ?? [], 3);
   if (gallery.length > 0) {
     gallerySection.classList.remove("hidden");
     galleryCount.textContent = `${gallery.length} imagen${gallery.length === 1 ? "" : "es"}`;
