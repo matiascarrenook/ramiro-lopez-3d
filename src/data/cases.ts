@@ -67,7 +67,7 @@ export const cases: CaseItem[] = [
     category: "Personaje",
     year: 2026,
     description:
-      "Versión render de The Maxx a cuerpo completo. Masas rotundas, silueta reconocible y lectura limpia desde cualquier ángulo, con el modelado optimizado para llevar la pieza del screen a la impresión 3D.",
+      "Tu eres malo... yo soy bueno... YO SOY MAXX",
     tags: ["Personaje", "Render", "Cuerpo completo"],
     software: ["Blender", "ZBrush"],
     focus: "Carácter y volumen",
