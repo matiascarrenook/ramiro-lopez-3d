@@ -4,7 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
-export const DEFAULT_EXPOSURE = 0.26;
+export const DEFAULT_EXPOSURE = 0.5;
 export const DEFAULT_LIGHTING = 0.5;
 export const ENV_INTENSITY = 1.6; // reflejos del entorno: lo que hace que el metal parezca metal
 export const MAX_METAL_ROUGHNESS = 0.3; // techo de rugosidad para metales (venían en 0.6-0.9: no reflejaban nada)

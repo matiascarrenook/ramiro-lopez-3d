@@ -50,6 +50,7 @@ export const cases: CaseItem[] = [
     focus: "Fidelity/3D print",
     format: "STL",
     coverExposure: 0.6,
+    exposure: 0.6,
     modelUrl: "/models/the-maxx-head.glb",
     coverImage: "/img/cover-the-maxx.png",
     gallery: [

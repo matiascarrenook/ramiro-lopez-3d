@@ -31,6 +31,10 @@ const galleryCount = document.getElementById("gallery-count") as HTMLSpanElement
 const linksSection = document.getElementById("links-section") as HTMLDivElement;
 const linksList = document.getElementById("links-list") as HTMLDivElement;
 
+const galleryLightbox = document.getElementById("gallery-lightbox") as HTMLDivElement | null;
+const galleryLightboxImg = document.getElementById("gallery-lightbox-img") as HTMLImageElement | null;
+const galleryLightboxClose = document.getElementById("gallery-lightbox-close") as HTMLButtonElement | null;
+
 const caseContainer = document.getElementById("case-viewer") as HTMLDivElement | null;
 const casePlaceholder = document.getElementById("case-placeholder") as HTMLDivElement;
 
@@ -253,7 +257,7 @@ function openCase(index: number) {
       });
       btn.addEventListener("click", (e) => {
         if (Math.hypot(e.clientX - downX, e.clientY - downY) > 8) return;
-        if (fullSrc) window.open(fullSrc, "_blank", "noopener,noreferrer");
+        openLightbox(fullSrc, item.alt);
       });
       galleryGrid.appendChild(btn);
     });
@@ -337,12 +341,18 @@ function openCase(index: number) {
   }
 
   if (isMobileUA) {
-    // Casos sin carrusel (p. ej. The Maxx): placeholder en móvil
-    if (mobileCarousel) mobileCarousel.classList.add("hidden");
+    // Casos sin carrusel (p. ej. The Maxx): mostrar la portada como imagen fija
     caseContainer?.style.setProperty("display", "none");
-    casePlaceholder.style.display = "grid";
-    casePlaceholder.classList.remove("opacity-0", "pointer-events-none");
-    setProgress(caseProgress, caseProgressText, 100);
+    if (mobileCarousel && carouselImg && c.coverImage) {
+      carouselImg.src = asset(c.coverImage);
+      mobileCarousel.classList.remove("hidden");
+      casePlaceholder.style.display = "none";
+    } else {
+      if (mobileCarousel) mobileCarousel.classList.add("hidden");
+      casePlaceholder.style.display = "grid";
+      casePlaceholder.classList.remove("opacity-0", "pointer-events-none");
+      setProgress(caseProgress, caseProgressText, 100);
+    }
     return;
   }
 
@@ -383,6 +393,22 @@ function closeCase() {
   // Reset placeholder visible para próxima apertura
   casePlaceholder.style.display = "grid";
   casePlaceholder.classList.remove("opacity-0", "pointer-events-none");
+  closeLightbox();
+}
+
+function openLightbox(src: string, alt?: string) {
+  if (!galleryLightbox || !galleryLightboxImg || !src) return;
+  galleryLightboxImg.src = src;
+  galleryLightboxImg.alt = alt ?? "";
+  galleryLightbox.classList.remove("hidden");
+  galleryLightbox.classList.add("flex");
+}
+
+function closeLightbox() {
+  if (!galleryLightbox) return;
+  galleryLightbox.classList.add("hidden");
+  galleryLightbox.classList.remove("flex");
+  if (galleryLightboxImg) galleryLightboxImg.src = "";
 }
 
 function toggleInfo() {
@@ -413,6 +439,11 @@ toggleInfoBtn?.addEventListener("click", toggleInfo);
 prevCaseBtn?.addEventListener("click", prevCase);
 nextCaseBtn?.addEventListener("click", nextCase);
 
+galleryLightboxClose?.addEventListener("click", closeLightbox);
+galleryLightbox?.addEventListener("click", (e) => {
+  if (e.target === galleryLightbox) closeLightbox();
+});
+
 caseModal?.addEventListener("click", (e) => {
   const dialogDimensions = caseModal.getBoundingClientRect();
   if (
@@ -430,6 +461,12 @@ caseModal.addEventListener("close", () => {
 });
 
 document.addEventListener("keydown", (e) => {
+  if (galleryLightbox && !galleryLightbox.classList.contains("hidden")) {
+    if (e.key === "Escape") {
+      closeLightbox();
+    }
+    return;
+  }
   if (!caseModal.open) return;
   if (e.key === "Escape") {
     closeCase();
