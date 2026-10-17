@@ -60,6 +60,7 @@ let caseViewer: ViewerHandle | null = null;
 
 let currentCaseIndex = 0;
 let infoOpen = true;
+let lightboxClosedAt = 0;
 
 let carouselIdx = 0;
 let carouselTimer: number | null = null;
@@ -409,6 +410,8 @@ function closeLightbox() {
   galleryLightbox.classList.add("hidden");
   galleryLightbox.classList.remove("flex");
   if (galleryLightboxImg) galleryLightboxImg.src = "";
+  // Evita que el mismo click/doble-click que cierra el render dispare Prev/Next
+  lightboxClosedAt = performance.now();
 }
 
 function toggleInfo() {
@@ -421,12 +424,14 @@ function toggleInfo() {
 }
 
 function prevCase() {
+  if (performance.now() - lightboxClosedAt < 450) return;
   if (currentCaseIndex > 0) {
     openCase(currentCaseIndex - 1);
   }
 }
 
 function nextCase() {
+  if (performance.now() - lightboxClosedAt < 450) return;
   if (currentCaseIndex < cases.length - 1) {
     openCase(currentCaseIndex + 1);
   }
@@ -439,8 +444,12 @@ toggleInfoBtn?.addEventListener("click", toggleInfo);
 prevCaseBtn?.addEventListener("click", prevCase);
 nextCaseBtn?.addEventListener("click", nextCase);
 
-galleryLightboxClose?.addEventListener("click", closeLightbox);
+galleryLightboxClose?.addEventListener("click", (e) => {
+  e.stopPropagation();
+  closeLightbox();
+});
 galleryLightbox?.addEventListener("click", (e) => {
+  e.stopPropagation();
   if (e.target === galleryLightbox) closeLightbox();
 });
 
