@@ -78,6 +78,9 @@ function bindSpinScrub(video: HTMLVideoElement) {
   let dragging = false;
   let startAngle = 0;
   let startTime = 0;
+  let targetTime = 0;
+  let seekInFlight = false;
+  let rafId = 0;
 
   const pointerAngle = (e: PointerEvent) => {
     const rect = video.getBoundingClientRect();
@@ -88,13 +91,32 @@ function bindSpinScrub(video: HTMLVideoElement) {
 
   const wrapTime = (t: number) => ((t % video.duration) + video.duration) % video.duration;
 
+  const pump = () => {
+    if (!dragging) {
+      rafId = 0;
+      return;
+    }
+    if (!seekInFlight && Math.abs(targetTime - video.currentTime) > 0.02) {
+      seekInFlight = true;
+      video.currentTime = targetTime;
+    }
+    rafId = requestAnimationFrame(pump);
+  };
+
+  video.addEventListener("seeked", () => {
+    seekInFlight = false;
+  });
+
   video.addEventListener("pointerdown", (e) => {
-    if (!video.duration || !Number.isFinite(video.duration) || video.readyState < 1) return;
+    if (!video.duration || !Number.isFinite(video.duration) || video.readyState < 2) return;
     dragging = true;
     startAngle = pointerAngle(e);
     startTime = video.currentTime;
+    targetTime = startTime;
+    seekInFlight = false;
     video.pause();
     if (mobileSpinHint) mobileSpinHint.style.opacity = "0";
+    if (!rafId) rafId = requestAnimationFrame(pump);
     try {
       video.setPointerCapture(e.pointerId);
     } catch {
@@ -107,12 +129,17 @@ function bindSpinScrub(video: HTMLVideoElement) {
     e.preventDefault();
     let delta = pointerAngle(e) - startAngle;
     delta = ((delta + 180) % 360 + 360) % 360 - 180;
-    video.currentTime = wrapTime(startTime + (delta / 360) * video.duration);
+    targetTime = wrapTime(startTime + (delta / 360) * video.duration);
   });
 
   const release = () => {
     if (!dragging) return;
     dragging = false;
+    seekInFlight = false;
+    if (rafId) {
+      cancelAnimationFrame(rafId);
+      rafId = 0;
+    }
     video.play().catch(() => undefined);
   };
 
