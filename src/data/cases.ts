@@ -22,6 +22,7 @@
   contrast?: boolean;
   gallery?: string[];
   carousel?: string[];
+  spinVideo?: string;
   links?: Array<{ label: string; url: string; icon: string }>;
 }
 
@@ -139,6 +140,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/betty-boop.glb",
     coverImage: "/img/cover-betty-boop.png",
     carousel: seq("betty", 10),
+    spinVideo: "/video/betty.mp4",
     links: socialLinks,
   },
   {

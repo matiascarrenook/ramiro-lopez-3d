@@ -48,6 +48,10 @@ const caseProgressText = document.getElementById("case-progress-text") as HTMLSp
 const mobileCarousel = document.getElementById("mobile-carousel") as HTMLDivElement | null;
 const carouselImg = document.getElementById("carousel-img") as HTMLImageElement | null;
 
+const mobileSpinWrap = document.getElementById("mobile-spin-wrap") as HTMLDivElement | null;
+const mobileSpin = document.getElementById("mobile-spin") as HTMLVideoElement | null;
+const mobileSpinHint = document.getElementById("mobile-spin-hint") as HTMLDivElement | null;
+
 function setProgress(bar: HTMLDivElement | null, textEl: HTMLSpanElement | null, ratio: number) {
   if (!bar) return;
   const pct = Math.min(100, Math.round(ratio * 100));
@@ -64,6 +68,58 @@ let lightboxClosedAt = 0;
 
 let carouselIdx = 0;
 let carouselTimer: number | null = null;
+
+let spinBound = false;
+
+function bindSpinScrub(video: HTMLVideoElement) {
+  if (spinBound) return;
+  spinBound = true;
+
+  let dragging = false;
+  let startAngle = 0;
+  let startTime = 0;
+
+  const pointerAngle = (e: PointerEvent) => {
+    const rect = video.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    return (Math.atan2(e.clientY - cy, e.clientX - cx) * 180) / Math.PI;
+  };
+
+  const wrapTime = (t: number) => ((t % video.duration) + video.duration) % video.duration;
+
+  video.addEventListener("pointerdown", (e) => {
+    if (!video.duration || !Number.isFinite(video.duration) || video.readyState < 1) return;
+    dragging = true;
+    startAngle = pointerAngle(e);
+    startTime = video.currentTime;
+    video.pause();
+    if (mobileSpinHint) mobileSpinHint.style.opacity = "0";
+    try {
+      video.setPointerCapture(e.pointerId);
+    } catch {
+      /* noop */
+    }
+  });
+
+  video.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    e.preventDefault();
+    let delta = pointerAngle(e) - startAngle;
+    delta = ((delta + 180) % 360 + 360) % 360 - 180;
+    video.currentTime = wrapTime(startTime + (delta / 360) * video.duration);
+  });
+
+  const release = () => {
+    if (!dragging) return;
+    dragging = false;
+    video.play().catch(() => undefined);
+  };
+
+  video.addEventListener("pointerup", release);
+  video.addEventListener("pointercancel", release);
+  video.addEventListener("lostpointercapture", release);
+}
 
 yearEl.textContent = new Date().getFullYear().toString();
 
@@ -322,9 +378,31 @@ function openCase(index: number) {
 
   // Carrusel en móvil: cada caso usa su propia secuencia de frames
   if (mobileCarousel) mobileCarousel.classList.add("hidden");
+  if (mobileSpinWrap) {
+    mobileSpinWrap.classList.add("hidden");
+    mobileSpin?.pause();
+  }
   if (carouselTimer !== null) {
     clearInterval(carouselTimer);
     carouselTimer = null;
+  }
+
+  if (isMobileUA && c.spinVideo && mobileSpinWrap && mobileSpin) {
+    mobileSpinWrap.classList.remove("hidden");
+    caseContainer?.style.setProperty("display", "none");
+    casePlaceholder.style.display = "none";
+    if (mobileSpinHint) {
+      mobileSpinHint.style.transition = "opacity 400ms";
+      mobileSpinHint.style.opacity = "1";
+    }
+    const url = asset(c.spinVideo);
+    if (mobileSpin.getAttribute("src") !== url) {
+      mobileSpin.src = url;
+      mobileSpin.load();
+    }
+    mobileSpin.play().catch(() => undefined);
+    bindSpinScrub(mobileSpin);
+    return;
   }
 
   if (isMobileUA && c.carousel && c.carousel.length > 0) {
