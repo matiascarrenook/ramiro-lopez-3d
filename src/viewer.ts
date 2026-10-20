@@ -424,6 +424,14 @@ if (saturation !== 1) {
               (mat as any).customProgramCacheKey = () => `desat-${v}`;
             }
           }
+          // OutlineEffect dibuja contorno en TODOS los materiales por defecto; solo los
+          // materiales toon deben llevarlo, el resto se desactiva explícitamente.
+          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          for (const mm of mats) {
+            if (mm && !mm.userData.outlineParameters) {
+              mm.userData.outlineParameters = { visible: false };
+            }
+          }
         });
         // Centrar el modelo en el origen del pivote para que el giro sea sobre su centro absoluto
         const pivot = new THREE.Group();
