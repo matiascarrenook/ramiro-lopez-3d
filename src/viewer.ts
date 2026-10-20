@@ -191,6 +191,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   function frameModel(model: THREE.Object3D) {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
+    const look = box.getCenter(new THREE.Vector3());
 
     const radius = Math.max(size.length() * 0.5, 0.001);
     const fov = (camera.fov * Math.PI) / 180;
@@ -198,11 +199,11 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
 
     camera.near = Math.max(dist / 100, 0.001);
     camera.far = dist * 100;
-    camera.position.set(0, size.y * 0.06, dist);
+    camera.position.set(look.x, look.y + size.y * 0.06, look.z + dist);
     camera.updateProjectionMatrix();
-    camera.lookAt(0, 0, 0);
+    camera.lookAt(look);
 
-    controls.target.set(0, 0, 0);
+    controls.target.copy(look);
     controls.minDistance = radius * 1.7;
     controls.maxDistance = radius * 6;
     controls.update();
