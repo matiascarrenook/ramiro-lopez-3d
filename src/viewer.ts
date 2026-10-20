@@ -141,7 +141,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = isMobile ? 0.12 : 0.08;
-  controls.enablePan = false;
+  controls.enablePan = true;
   controls.autoRotate = options.autoRotate ?? true;
   controls.autoRotateSpeed = options.autoRotateSpeed ?? (isMobile ? 0.6 : 1.4);
   controls.minPolarAngle = 0.15;
@@ -183,7 +183,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
     camera.lookAt(0, 0, 0);
 
     controls.target.set(0, 0, 0);
-    controls.minDistance = radius * 0.8;
+    controls.minDistance = radius * 1.7;
     controls.maxDistance = radius * 6;
     controls.update();
   }

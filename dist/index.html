@@ -8,6 +8,47 @@
   <meta name="description"
     content="Artista 3D especializado en diseño orgánico. Portfolio experimental con modelos 3D interactivos." />
   <meta name="theme-color" content="#000000" />
+  <meta name="author" content="Ramiro Lopez" />
+
+  <link rel="canonical" href="https://lopezsculpts.com.ar/" />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ramiro Lopez" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:title" content="Ramiro Lopez · Artista 3D | Sculptor" />
+  <meta property="og:description"
+    content="Artista 3D especializado en diseño orgánico. Portfolio experimental con modelos 3D interactivos." />
+  <meta property="og:url" content="https://lopezsculpts.com.ar/" />
+  <meta property="og:image" content="https://lopezsculpts.com.ar/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ramiro Lopez — Artista 3D y escultor" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ramiro Lopez · Artista 3D | Sculptor" />
+  <meta name="twitter:description"
+    content="Artista 3D especializado en diseño orgánico. Portfolio experimental con modelos 3D interactivos." />
+  <meta name="twitter:image" content="https://lopezsculpts.com.ar/og-image.jpg" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Ramiro Lopez",
+    "alternateName": "Lopez Sculpts",
+    "jobTitle": "Artista 3D y Escultor",
+    "description": "Artista 3D de Argentina especializado en escultura digital y diseño orgánico para impresión 3D.",
+    "url": "https://lopezsculpts.com.ar/",
+    "image": "https://lopezsculpts.com.ar/og-image.jpg",
+    "email": "mailto:lopezsculpts@gmail.com",
+    "address": { "@type": "PostalAddress", "addressCountry": "AR" },
+    "knowsAbout": ["Escultura digital", "Modelado 3D", "Diseño orgánico", "Impresión 3D", "Blender", "ZBrush"],
+    "sameAs": [
+      "https://www.instagram.com/lopez_sculpts/",
+      "https://www.artstation.com/ramiro_lopez"
+    ]
+  }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,8 +59,8 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
 
   <link rel="icon" type="image/svg+xml" href="/ramiro-lopez-3d/favicon.svg" />
-  <script type="module" crossorigin src="/ramiro-lopez-3d/assets/index-Cvn-u9eH.js"></script>
-  <link rel="stylesheet" crossorigin href="/ramiro-lopez-3d/assets/index-BtD2M7T1.css">
+  <script type="module" crossorigin src="/ramiro-lopez-3d/assets/index-9T8NvUR8.js"></script>
+  <link rel="stylesheet" crossorigin href="/ramiro-lopez-3d/assets/index-pKKu1dKV.css">
 </head>
 
 <body class="bg-black text-white font-[Inter,Satoshi,system-ui,sans-serif] antialiased">
@@ -248,6 +289,9 @@
         © <span id="year"></span> RAMIRO LOPEZ
       </p>
     </div>
+    <p class="mt-4 text-center text-[10px] uppercase tracking-[0.2em] text-white/30">
+      <a href="https://gordons-dev.com.ar" target="_blank" rel="noopener noreferrer" class="transition-colors hover:text-white/70">GORDONS/DEV</a>
+    </p>
   </footer>
 
   <dialog id="case-modal" class="m-0 h-full w-full max-w-none bg-transparent p-0 text-white outline-none">
@@ -279,6 +323,9 @@
           <div id="mobile-carousel" class="absolute inset-0 hidden h-full w-full overflow-hidden bg-black">
             <img id="carousel-img" src="" alt="Vista del modelo" class="h-full w-full select-none object-contain" loading="eager" draggable="false" />
             <div class="absolute inset-0"></div>
+          </div>
+          <div id="mobile-spin-wrap" class="absolute inset-0 hidden overflow-hidden bg-black">
+            <video id="mobile-spin" class="h-full w-full select-none object-contain" playsinline muted loop preload="auto"></video>
           </div>
           <div id="case-placeholder" class="absolute inset-0 grid place-items-center bg-black">
             <div class="w-48 text-center">
@@ -336,9 +383,9 @@
         </aside>
       </div>
       <div id="gallery-lightbox" class="absolute inset-0 z-50 hidden items-center justify-center bg-black/90 p-4 backdrop-blur-sm">
-        <button id="gallery-lightbox-close" class="btn-brutal absolute right-4 top-4" aria-label="Cerrar imagen">
+        <button id="gallery-lightbox-close" class="btn-brutal absolute bottom-6 left-1/2 -translate-x-1/2" aria-label="Cerrar imagen">
           <i class="bi bi-x-lg"></i>
-          Close
+          Cerrar
         </button>
         <img id="gallery-lightbox-img" src="" alt="" class="max-h-full max-w-full select-none object-contain" />
       </div>
