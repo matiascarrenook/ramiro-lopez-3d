@@ -143,8 +143,12 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   controls.enableDamping = true;
   controls.dampingFactor = isMobile ? 0.12 : 0.08;
   controls.enablePan = true;
-  controls.autoRotate = options.autoRotate ?? true;
-  controls.autoRotateSpeed = options.autoRotateSpeed ?? (isMobile ? 0.6 : 1.4);
+  controls.autoRotate = false; // el giro lo hace el modelo, no la cámara: las luces quedan fijas
+  const spinSpeed = options.autoRotateSpeed ?? (isMobile ? 0.3 : 0.5);
+  const autoSpin = options.autoRotate ?? true;
+  let userInteracting = false;
+  controls.addEventListener("start", () => { userInteracting = true; });
+  controls.addEventListener("end", () => { userInteracting = false; });
   controls.minPolarAngle = 0.15;
   controls.maxPolarAngle = Math.PI - 0.15;
 
@@ -309,6 +313,7 @@ if (saturation !== 1) {
   function animate() {
     raf = requestAnimationFrame(animate);
     controls.update();
+    if (autoSpin && current && !userInteracting) current.rotation.y += spinSpeed * 0.01;
     renderer.render(scene, camera);
   }
   animate();
