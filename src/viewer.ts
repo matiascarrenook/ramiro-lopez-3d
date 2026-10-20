@@ -4,7 +4,7 @@ import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
 
-export const DEFAULT_EXPOSURE = 0.44;
+export const DEFAULT_EXPOSURE = 0.55;
 export const DEFAULT_LIGHTING = 0.5;
 export const ENV_INTENSITY = 1.6; // reflejos del entorno: lo que hace que el metal parezca metal
 export const MAX_METAL_ROUGHNESS = 0.3; // techo de rugosidad para metales (venían en 0.6-0.9: no reflejaban nada)
@@ -30,9 +30,9 @@ function studioEnvironment(): THREE.Scene {
     m.lookAt(0, 0, 0);
     s.add(m);
   };
-  box(5, 4, [0.15, 0.5, 3.5], [-6.5, 4.5, 1.5]); // azul (izquierda arriba)
-  box(7, 5, [4.5, 4.4, 4.2], [0, 6, 3]); // blanca (centro arriba)
-  box(5, 4, [3.6, 1.4, 0.15], [6.5, 4.5, 1.5]); // naranja cálida (derecha arriba)
+  box(5, 4, [0, 0.2, 5], [-6.5, 4.5, 1.5]); // azul puro (izquierda arriba)
+  box(7, 5, [6, 5.9, 5.7], [0, 6, 3]); // blanca (centro arriba)
+  box(5, 4, [5, 1, 0], [6.5, 4.5, 1.5]); // naranja puro (derecha arriba)
   box(12, 12, [0.25, 0.25, 0.3], [0, -6, 0]); // piso
   return s;
 }
@@ -96,23 +96,23 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   scene.environment = defaultEnv;
   let hdriRT: THREE.WebGLRenderTarget | null = null;
 
-  const BASE_LIGHTS = { hemi: 0.8, key: 1.5, rim: 1.1, fill: 0.85 };
+  const BASE_LIGHTS = { hemi: 1.1, key: 2.1, rim: 1.6, fill: 1.25 };
   const hemi = new THREE.HemisphereLight(0xffffff, 0x3a3a4a, BASE_LIGHTS.hemi);
   scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, BASE_LIGHTS.key);
   key.position.set(0, 5, 5.5); // blanca, centro
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0xff5a10, BASE_LIGHTS.rim);
+  const rim = new THREE.DirectionalLight(0xff4400, BASE_LIGHTS.rim);
   rim.position.set(6, 4, 1.5); // naranja saturada, derecha
   scene.add(rim);
-  const fill = new THREE.DirectionalLight(0x1f6bff, BASE_LIGHTS.fill);
+  const fill = new THREE.DirectionalLight(0x0055ff, BASE_LIGHTS.fill);
   fill.position.set(-6, 4, 1.5); // azul saturado, izquierda
   scene.add(fill);
   const contour = new THREE.DirectionalLight(0xffffff, 0);
   contour.position.set(0, 6, -5);
   scene.add(contour); // luz de contraste: raking light en ángulo para marcar relieves
 
-  const GROUND_CONTRAST = { hemi: 0.5, key: 1.0, rim: 0.95, fill: 0.45, contour: 2.4 };
+  const GROUND_CONTRAST = { hemi: 0.7, key: 1.4, rim: 1.35, fill: 0.65, contour: 3.2 };
 
   let lighting = options.lighting ?? DEFAULT_LIGHTING;
   let roughLimit = options.roughness ?? MAX_METAL_ROUGHNESS;
