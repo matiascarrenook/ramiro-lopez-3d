@@ -20,6 +20,7 @@
   coverImage: string;
   hdri?: string;
   contrast?: boolean;
+  spinCenter?: [number, number, number];
   gallery?: string[];
   carousel?: string[];
   spinVideo?: string;
@@ -119,6 +120,7 @@ export const cases: CaseItem[] = [
     metalness: 0.6,
     envIntensity: 0.9,
     saturation: 0.7,
+    spinCenter: [0, -0.32, 0],
     modelUrl: "/models/mazinger.glb",
     coverImage: "/img/cover-mazinger.png",
     carousel: seq("mazinger", 16),

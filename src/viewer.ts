@@ -38,7 +38,7 @@ function studioEnvironment(): THREE.Scene {
 }
 
 export type ViewerHandle = {
-  load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean): void;
+  load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean, spinCenterArg?: [number, number, number]): void;
   dispose(): void;
 };
 
@@ -53,6 +53,7 @@ type ViewerOptions = {
   saturation?: number; // 1 = pleno, 0.85 = levemente desaturado
   hdri?: string; // ruta a un HDRI .hdr que reemplaza al estudio procedural
   contrast?: boolean; // iluminación direccional en ángulo que marca relieve y contornos del modelado
+  spinCenter?: [number, number, number]; // centro de giro propio (si no, se usa el centro del bbox)
 };
 
 export function createViewer(container: HTMLElement, options: ViewerOptions = {}): ViewerHandle {
@@ -135,6 +136,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   let metalTarget = options.metalness;
   let envInt = options.envIntensity ?? ENV_INTENSITY;
   let saturation = options.saturation ?? 1;
+  let spinCenter: [number, number, number] | undefined;
 
   function applyLighting(scale: number) {
     lighting = scale;
@@ -206,10 +208,11 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
     controls.update();
   }
 
-  function load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean) {
+  function load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean, spinCenterArg?: [number, number, number]) {
     const token = ++loadToken;
     url = resolveAsset(url) ?? "";
     hdriArg = resolveAsset(hdriArg);
+    spinCenter = spinCenterArg;
     if (typeof exposure === "number") renderer.toneMappingExposure = exposure;
     else renderer.toneMappingExposure = DEFAULT_EXPOSURE;
     if (contrastArg === true) applyContrast(lightingArg ?? DEFAULT_LIGHTING);
@@ -309,7 +312,9 @@ if (saturation !== 1) {
         model.position.set(0, 0, 0);
         model.updateMatrixWorld(true);
         const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
+        const center = spinCenter
+          ? new THREE.Vector3(spinCenter[0], spinCenter[1], spinCenter[2])
+          : box.getCenter(new THREE.Vector3());
         model.position.copy(center).negate();
         pivot.add(model);
         pivot.updateMatrixWorld(true);
