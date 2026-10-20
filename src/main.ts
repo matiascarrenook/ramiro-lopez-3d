@@ -129,7 +129,7 @@ function bindSpinScrub(video: HTMLVideoElement) {
     e.preventDefault();
     let delta = pointerAngle(e) - startAngle;
     delta = ((delta + 180) % 360 + 360) % 360 - 180;
-    targetTime = wrapTime(startTime + (delta / 360) * video.duration);
+    targetTime = wrapTime(startTime - (delta / 360) * video.duration);
   });
 
   const release = () => {
