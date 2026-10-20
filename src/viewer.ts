@@ -88,7 +88,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   // Contorno tipo cómic para los materiales toon (ver load()).
   const outlineEffect = new OutlineEffect(renderer, {
     defaultThickness: 0.006,
-    defaultColor: [0.5, 0.5, 0.5],
+    defaultColor: [0.22, 0.22, 0.22],
     defaultAlpha: 1,
     defaultKeepAlive: true,
   });
@@ -365,7 +365,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
             // El contorno lo dibuja OutlineEffect a partir de este userData.
             toon.userData.outlineParameters = {
               thickness: 0.006,
-              color: [0.5, 0.5, 0.5],
+              color: [0.22, 0.22, 0.22],
               alpha: 1,
               visible: true,
               keepAlive: true,
