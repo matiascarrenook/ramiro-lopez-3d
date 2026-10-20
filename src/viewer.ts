@@ -30,9 +30,9 @@ function studioEnvironment(): THREE.Scene {
     m.lookAt(0, 0, 0);
     s.add(m);
   };
-  box(5, 4, [0, 0.2, 5], [-6.5, 4.5, 1.5]); // azul puro (izquierda arriba)
-  box(7, 5, [6, 5.9, 5.7], [0, 6, 3]); // blanca (centro arriba)
-  box(5, 4, [5, 1, 0], [6.5, 4.5, 1.5]); // naranja puro (derecha arriba)
+  box(5, 4, [0, 0.08, 6], [-6.5, 4.5, 1.5]); // azul puro (izquierda arriba)
+  box(7, 5, [5.5, 5.4, 5.2], [0, 6.5, 3]); // blanca tenue (centro arriba)
+  box(5, 4, [6, 0.7, 0], [6.5, 4.5, 1.5]); // naranja puro (derecha arriba)
   box(12, 12, [0.25, 0.25, 0.3], [0, -6, 0]); // piso
   return s;
 }
@@ -96,23 +96,24 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   scene.environment = defaultEnv;
   let hdriRT: THREE.WebGLRenderTarget | null = null;
 
-  const BASE_LIGHTS = { hemi: 1.1, key: 2.1, rim: 1.6, fill: 1.25 };
+  // La blanca se mantiene tenue para que azul/naranja dominen los reflejos de color.
+  const BASE_LIGHTS = { hemi: 0.5, key: 0.9, rim: 2.1, fill: 1.7 };
   const hemi = new THREE.HemisphereLight(0xffffff, 0x3a3a4a, BASE_LIGHTS.hemi);
   scene.add(hemi);
   const key = new THREE.DirectionalLight(0xffffff, BASE_LIGHTS.key);
-  key.position.set(0, 5, 5.5); // blanca, centro
+  key.position.set(0, 5, 5.5); // blanca tenue, centro
   scene.add(key);
-  const rim = new THREE.DirectionalLight(0xff4400, BASE_LIGHTS.rim);
+  const rim = new THREE.DirectionalLight(0xff2e00, BASE_LIGHTS.rim);
   rim.position.set(6, 4, 1.5); // naranja saturada, derecha
   scene.add(rim);
-  const fill = new THREE.DirectionalLight(0x0055ff, BASE_LIGHTS.fill);
+  const fill = new THREE.DirectionalLight(0x0040ff, BASE_LIGHTS.fill);
   fill.position.set(-6, 4, 1.5); // azul saturado, izquierda
   scene.add(fill);
   const contour = new THREE.DirectionalLight(0xffffff, 0);
   contour.position.set(0, 6, -5);
   scene.add(contour); // luz de contraste: raking light en ángulo para marcar relieves
 
-  const GROUND_CONTRAST = { hemi: 0.7, key: 1.4, rim: 1.35, fill: 0.65, contour: 3.2 };
+  const GROUND_CONTRAST = { hemi: 0.35, key: 0.6, rim: 1.8, fill: 0.9, contour: 2.2 };
 
   let lighting = options.lighting ?? DEFAULT_LIGHTING;
   let roughLimit = options.roughness ?? MAX_METAL_ROUGHNESS;
