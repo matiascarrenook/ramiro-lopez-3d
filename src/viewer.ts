@@ -203,8 +203,8 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
       const dy = (e.clientY - lastY) * worldPerPx;
       _panRight.setFromMatrixColumn(camera.matrix, 0);
       _panUp.setFromMatrixColumn(camera.matrix, 1);
-      current.position.addScaledVector(_panRight, -dx);
-      current.position.addScaledVector(_panUp, dy);
+      current.position.addScaledVector(_panRight, dx);
+      current.position.addScaledVector(_panUp, -dy);
     };
     el.addEventListener("pointerdown", (e) => {
       const isPan = e.button === 1 || e.button === 2 || (e.button === 0 && e.shiftKey);
