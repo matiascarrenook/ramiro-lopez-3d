@@ -70,17 +70,25 @@ let carouselIdx = 0;
 let carouselTimer: number | null = null;
 
 let spinBound = false;
+let stopReverseSpin: () => void = () => {};
 
 function bindSpinScrub(video: HTMLVideoElement) {
   if (spinBound) return;
   spinBound = true;
 
   let dragging = false;
-  let startAngle = 0;
+  let moved = false;
+  let prevPointerAngle = 0;
   let startTime = 0;
+  let accumulated = 0;
   let targetTime = 0;
   let seekInFlight = false;
   let rafId = 0;
+  let direction = 1;
+  let reverseRaf = 0;
+  let reverseActive = false;
+  let reversePending = 0;
+  let reverseLast = 0;
 
   const pointerAngle = (e: PointerEvent) => {
     const rect = video.getBoundingClientRect();
@@ -103,15 +111,50 @@ function bindSpinScrub(video: HTMLVideoElement) {
     rafId = requestAnimationFrame(pump);
   };
 
+  const reverseStep = (now: number) => {
+    if (!reverseActive) {
+      reverseRaf = 0;
+      return;
+    }
+    const dt = Math.min((now - reverseLast) / 1000, 0.05);
+    reverseLast = now;
+    reversePending += dt * direction;
+    if (!seekInFlight && Math.abs(reversePending) > 0.015) {
+      seekInFlight = true;
+      video.currentTime = wrapTime(video.currentTime + reversePending);
+      reversePending = 0;
+    }
+    reverseRaf = requestAnimationFrame(reverseStep);
+  };
+
+  const startReverse = () => {
+    if (reverseActive) return;
+    reverseActive = true;
+    reverseLast = performance.now();
+    reverseRaf = requestAnimationFrame(reverseStep);
+  };
+
+  stopReverseSpin = () => {
+    reverseActive = false;
+    if (reverseRaf) {
+      cancelAnimationFrame(reverseRaf);
+      reverseRaf = 0;
+    }
+    reversePending = 0;
+  };
+
   video.addEventListener("seeked", () => {
     seekInFlight = false;
   });
 
   video.addEventListener("pointerdown", (e) => {
     if (!video.duration || !Number.isFinite(video.duration) || video.readyState < 2) return;
+    stopReverseSpin();
     dragging = true;
-    startAngle = pointerAngle(e);
+    moved = false;
+    prevPointerAngle = pointerAngle(e);
     startTime = video.currentTime;
+    accumulated = 0;
     targetTime = startTime;
     seekInFlight = false;
     video.pause();
@@ -127,9 +170,15 @@ function bindSpinScrub(video: HTMLVideoElement) {
   video.addEventListener("pointermove", (e) => {
     if (!dragging) return;
     e.preventDefault();
-    let delta = pointerAngle(e) - startAngle;
-    delta = ((delta + 180) % 360 + 360) % 360 - 180;
-    targetTime = wrapTime(startTime - (delta / 360) * video.duration);
+    const now = pointerAngle(e);
+    let step = now - prevPointerAngle;
+    step = ((step + 180) % 360 + 360) % 360 - 180;
+    prevPointerAngle = now;
+    if (step === 0) return;
+    moved = true;
+    accumulated += step;
+    direction = -Math.sign(step);
+    targetTime = wrapTime(startTime - (accumulated / 360) * video.duration);
   });
 
   const release = () => {
@@ -140,7 +189,13 @@ function bindSpinScrub(video: HTMLVideoElement) {
       cancelAnimationFrame(rafId);
       rafId = 0;
     }
-    video.play().catch(() => undefined);
+    if (moved && direction < 0) {
+      video.pause();
+      startReverse();
+    } else {
+      stopReverseSpin();
+      video.play().catch(() => undefined);
+    }
   };
 
   video.addEventListener("pointerup", release);
@@ -408,6 +463,7 @@ function openCase(index: number) {
   if (mobileSpinWrap) {
     mobileSpinWrap.classList.add("hidden");
     mobileSpin?.pause();
+    stopReverseSpin();
   }
   if (carouselTimer !== null) {
     clearInterval(carouselTimer);
