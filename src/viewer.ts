@@ -94,6 +94,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   const pmrem = new THREE.PMREMGenerator(renderer);
   const defaultEnv = pmrem.fromScene(studioEnvironment(), 0.04).texture;
   scene.environment = defaultEnv;
+  const _envQuat = new THREE.Quaternion();
   let hdriRT: THREE.WebGLRenderTarget | null = null;
 
   // La blanca se mantiene tenue para que azul/naranja dominen los reflejos de color.
@@ -188,8 +189,6 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   function frameModel(model: THREE.Object3D) {
     const box = new THREE.Box3().setFromObject(model);
     const size = box.getSize(new THREE.Vector3());
-    const center = box.getCenter(new THREE.Vector3());
-    model.position.sub(center);
 
     const radius = Math.max(size.length() * 0.5, 0.001);
     const fov = (camera.fov * Math.PI) / 180;
@@ -305,13 +304,19 @@ if (saturation !== 1) {
             mat.needsUpdate = true;
           }
         });
-        scene.add(model);
-        current = model;
-        current.traverse((child) => {
+        // Centrar la geometria en el origen del pivote para que el giro sea sobre el propio centro
+        const pivot = new THREE.Group();
+        const box = new THREE.Box3().setFromObject(model);
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.sub(center);
+        pivot.add(model);
+        scene.add(pivot);
+        current = pivot;
+        pivot.traverse((child) => {
           const mesh = child as THREE.Mesh;
           if (mesh.isMesh) mesh.frustumCulled = true;
         });
-        frameModel(model);
+        frameModel(pivot);
         container.dispatchEvent(new CustomEvent("viewer-loaded"));
       },
       (e) => {
@@ -334,6 +339,12 @@ if (saturation !== 1) {
     controls.update();
     if (autoSpin && current && !userInteracting) current.rotation.y += spinSpeed * 0.01;
     setCamSpaceLights();
+    // El entorno (IBL) queda anclado a la camara: mismas cajas azul/blanca/naranja
+    // a la izquierda/centro/derecha de pantalla, sin girar con el modelo.
+    if (scene.environment === defaultEnv) {
+      _envQuat.copy(camera.quaternion).invert();
+      scene.environmentRotation.setFromQuaternion(_envQuat);
+    }
     renderer.render(scene, camera);
   }
   animate();
