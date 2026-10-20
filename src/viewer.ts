@@ -162,10 +162,17 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   controls.enablePan = true;
   controls.autoRotate = false; // el giro lo hace el modelo, no la cámara: las luces quedan fijas
   const spinSpeed = options.autoRotateSpeed ?? (isMobile ? 0.3 : 0.5);
+  const SPIN_DEG_PER_S = 9 * spinSpeed; // velocidad del giro en grados/segundo (independiente de los FPS)
   const autoSpin = options.autoRotate ?? true;
   let userInteracting = false;
+  let spinResumeAt = 0; // timestamp hasta el que el giro queda frenado tras soltar
+  const SPIN_RESUME_MS = 2000;
+  let spinFactor = 1; // arranque suave del giro al reanudar
   controls.addEventListener("start", () => { userInteracting = true; });
-  controls.addEventListener("end", () => { userInteracting = false; });
+  controls.addEventListener("end", () => {
+    userInteracting = false;
+    spinResumeAt = performance.now() + SPIN_RESUME_MS;
+  });
   controls.minPolarAngle = 0.15;
   controls.maxPolarAngle = Math.PI - 0.15;
 
@@ -343,10 +350,35 @@ if (saturation !== 1) {
   }
 
   let raf = 0;
+  const _prevTarget = new THREE.Vector3();
+  const _panDelta = new THREE.Vector3();
+  let _lastT = performance.now();
   function animate() {
     raf = requestAnimationFrame(animate);
+    const t = performance.now();
+    const dt = Math.min((t - _lastT) / 1000, 0.1); // segundos, acotado
+    _lastT = t;
+    _prevTarget.copy(controls.target);
     controls.update();
-    if (autoSpin && current && !userInteracting) current.rotation.y += spinSpeed * 0.01;
+    // El pan mueve camara y target juntos: trasladamos ese delta al modelo y devolvemos
+    // camara/target a su lugar, asi el modelo se mueve por la pantalla y sigue girando
+    // sobre su propio centro (que viaja con el), siempre en eje.
+    if (current) {
+      _panDelta.subVectors(controls.target, _prevTarget);
+      if (_panDelta.lengthSq() > 1e-10) {
+        current.position.add(_panDelta);
+        camera.position.sub(_panDelta);
+        controls.target.copy(_prevTarget);
+      }
+    }
+    // Giro automatico: se frena 2s tras soltar y reanuda acelerando suave.
+    const canSpin = autoSpin && !userInteracting && t >= spinResumeAt;
+    if (canSpin && current) {
+      spinFactor = Math.min(1, spinFactor + dt * 0.8);
+      current.rotation.y += THREE.MathUtils.degToRad(SPIN_DEG_PER_S) * dt * spinFactor;
+    } else {
+      spinFactor = 0;
+    }
     setCamSpaceLights();
     // El entorno (IBL) queda anclado a la camara: mismas cajas azul/blanca/naranja
     // a la izquierda/centro/derecha de pantalla, sin girar con el modelo.
