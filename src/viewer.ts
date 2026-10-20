@@ -212,12 +212,17 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
     url = resolveAsset(url) ?? "";
     hdriArg = resolveAsset(hdriArg);
     if (typeof exposure === "number") renderer.toneMappingExposure = exposure;
+    else renderer.toneMappingExposure = DEFAULT_EXPOSURE;
     if (contrastArg === true) applyContrast(lightingArg ?? DEFAULT_LIGHTING);
-    else if (typeof lightingArg === "number") applyLighting(lightingArg);
+    else applyLighting(lightingArg ?? DEFAULT_LIGHTING);
     if (typeof roughnessArg === "number") roughLimit = roughnessArg;
+    else roughLimit = MAX_METAL_ROUGHNESS;
     if (typeof metalnessArg === "number") metalTarget = metalnessArg;
+    else metalTarget = undefined;
     if (typeof envArg === "number") envInt = envArg;
+    else envInt = ENV_INTENSITY;
     if (typeof saturationArg === "number") saturation = saturationArg;
+    else saturation = 1;
     if (hdriRT) {
       hdriRT.dispose();
       hdriRT = null;
