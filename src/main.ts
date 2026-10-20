@@ -394,7 +394,7 @@ function openCase(index: number) {
     caseContainer.addEventListener("viewer-error", handleCaseError);
   }
   caseContainer?.addEventListener("viewer-progress", caseOnProgress);
-  caseViewer?.load(c.modelUrl, c.exposure, c.lighting, c.roughness, c.metalness, c.envIntensity, c.saturation, c.hdri, c.contrast, c.spinCenter);
+  caseViewer?.load(c.modelUrl, c.exposure, c.lighting, c.roughness, c.metalness, c.envIntensity, c.saturation, c.hdri, c.contrast, c.spinCenter, c.toon);
 }
 
 function handleCaseLoad() {

@@ -21,6 +21,7 @@
   hdri?: string;
   contrast?: boolean;
   spinCenter?: [number, number, number];
+  toon?: boolean;
   gallery?: string[];
   carousel?: string[];
   spinVideo?: string;
@@ -78,6 +79,7 @@ export const cases: CaseItem[] = [
     envIntensity: 0.38,
     saturation: 0.61,
     modelUrl: "/models/maxx-render.glb?v=2",
+    toon: true,
     coverImage: "/img/cover-maxx-render.png",
     carousel: seq("maxx-render", 16),
     links: socialLinks,

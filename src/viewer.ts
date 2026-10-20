@@ -37,8 +37,37 @@ function studioEnvironment(): THREE.Scene {
   return s;
 }
 
+// Gradiente de bandas para cel-shading (3 pasos: sombra, medio, luz).
+function toonGradientMap(): THREE.DataTexture {
+  const steps = new Uint8Array([80, 170, 255]);
+  const tex = new THREE.DataTexture(steps, steps.length, 1, THREE.RedFormat);
+  tex.minFilter = THREE.NearestFilter;
+  tex.magFilter = THREE.NearestFilter;
+  tex.generateMipmaps = false;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+// Contorno por "hull": copia de la malla con caras traseras negras y vértices
+// empujados hacia afuera a lo largo de su normal (técnica de outline clásica).
+function outlineMaterial(): THREE.MeshBasicMaterial {
+  const mat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide });
+  (mat as any).userData = { outline: true };
+  mat.onBeforeCompile = (shader) => {
+    shader.uniforms.uOutline = { value: (mat as any).userData.size ?? 0.01 };
+    shader.vertexShader = "uniform float uOutline;\n" + shader.vertexShader;
+    shader.vertexShader = shader.vertexShader.replace(
+      "#include <begin_vertex>",
+      `#include <begin_vertex>
+       transformed += objectNormal * uOutline;`
+    );
+  };
+  mat.customProgramCacheKey = () => "outline";
+  return mat;
+}
+
 export type ViewerHandle = {
-  load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean, spinCenterArg?: [number, number, number]): void;
+  load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean, spinCenterArg?: [number, number, number], toonArg?: boolean): void;
   dispose(): void;
 };
 
@@ -54,6 +83,7 @@ type ViewerOptions = {
   hdri?: string; // ruta a un HDRI .hdr que reemplaza al estudio procedural
   contrast?: boolean; // iluminación direccional en ángulo que marca relieve y contornos del modelado
   spinCenter?: [number, number, number]; // centro de giro propio (si no, se usa el centro del bbox)
+  toon?: boolean; // cel-shading: convierte materiales unlit a MeshToonMaterial + contorno negro
 };
 
 export function createViewer(container: HTMLElement, options: ViewerOptions = {}): ViewerHandle {
@@ -139,6 +169,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   let envInt = options.envIntensity ?? ENV_INTENSITY;
   let saturation = options.saturation ?? 1;
   let spinCenter: [number, number, number] | undefined;
+  let toonMode = false;
 
   function applyLighting(scale: number) {
     lighting = scale;
@@ -257,8 +288,9 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
     controls.update();
   }
 
-  function load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean, spinCenterArg?: [number, number, number]) {
+  function load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean, spinCenterArg?: [number, number, number], toonArg?: boolean) {
     const token = ++loadToken;
+    toonMode = !!toonArg;
     url = resolveAsset(url) ?? "";
     hdriArg = resolveAsset(hdriArg);
     spinCenter = spinCenterArg;
@@ -318,10 +350,49 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
           return;
         }
         const model = gltf.scene;
+        model.updateMatrixWorld(true);
+        const box = new THREE.Box3().setFromObject(model);
+        const modelSize = box.getSize(new THREE.Vector3());
+        const gradMap = toonMode ? toonGradientMap() : null;
         model.traverse((child) => {
           const mesh = child as THREE.Mesh;
           if (!mesh.isMesh) return;
+          const mat0 = Array.isArray(mesh.material) ? mesh.material[0] : mesh.material;
+          if (mat0 && (mat0 as any).userData?.outline) return; // no recursar sobre los contornos
           mesh.frustumCulled = false;
+          const orig = mesh.material as THREE.Material | THREE.Material[];
+          // Cel-shading: los materiales unlit (KHR_materials_unlit) planos se convierten a
+          // MeshToonMaterial con bandas de luz, y se les agrega un contorno negro.
+          const toToon = (m: THREE.Material): THREE.Material => {
+            if (!(m as any).isMeshBasicMaterial) return m;
+            const basic = m as THREE.MeshBasicMaterial;
+            const toon = new THREE.MeshToonMaterial({
+              color: basic.color ? basic.color.clone() : new THREE.Color(0xffffff),
+              map: basic.map ?? null,
+              gradientMap: gradMap!,
+              vertexColors: !!mesh.geometry.getAttribute("color"),
+              side: THREE.DoubleSide,
+            });
+            return toon;
+          };
+          if (toonMode) {
+            const first = Array.isArray(orig) ? orig[0] : orig;
+            if (first && (first as any).isMeshBasicMaterial && mesh.parent) {
+              const om = outlineMaterial();
+              (om as any).userData.size = Math.max(modelSize.length() * 0.0015, 1e-4);
+              om.needsUpdate = true;
+              const oMesh = new THREE.Mesh(mesh.geometry, om);
+              oMesh.frustumCulled = false;
+              oMesh.matrixAutoUpdate = false;
+              oMesh.matrix.copy(mesh.matrix);
+              mesh.parent.add(oMesh);
+            }
+          }
+          mesh.material = toonMode
+            ? Array.isArray(orig)
+              ? orig.map(toToon)
+              : toToon(orig)
+            : orig;
           const mat = mesh.material as THREE.MeshStandardMaterial;
           if (mat && (mat as any).isMeshStandardMaterial) {
             mat.side = THREE.DoubleSide;
@@ -360,7 +431,6 @@ if (saturation !== 1) {
         const pivot = new THREE.Group();
         model.position.set(0, 0, 0);
         model.updateMatrixWorld(true);
-        const box = new THREE.Box3().setFromObject(model);
         const center = spinCenter
           ? new THREE.Vector3(spinCenter[0], spinCenter[1], spinCenter[2])
           : box.getCenter(new THREE.Vector3());
