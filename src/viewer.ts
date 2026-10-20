@@ -322,21 +322,6 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
           const mesh = child as THREE.Mesh;
           if (!mesh.isMesh) return;
           mesh.frustumCulled = false;
-          const orig = mesh.material as THREE.Material | THREE.Material[];
-          // Los materiales unlit (MeshBasicMaterial, p.ej. KHR_materials_unlit) ignoran las
-          // luces: los convertimos a MeshStandardMaterial para que reciban iluminacion.
-          const toStd = (m: THREE.Material): THREE.Material => {
-            if (!(m as any).isMeshBasicMaterial) return m;
-            const basic = m as THREE.MeshBasicMaterial;
-            const std = new THREE.MeshStandardMaterial({
-              color: basic.color ? basic.color.clone() : new THREE.Color(0xffffff),
-              map: basic.map ?? null,
-              vertexColors: !!mesh.geometry.getAttribute("color"),
-              side: THREE.DoubleSide,
-            });
-            return std;
-          };
-          mesh.material = Array.isArray(orig) ? orig.map(toStd) : toStd(orig);
           const mat = mesh.material as THREE.MeshStandardMaterial;
           if (mat && (mat as any).isMeshStandardMaterial) {
             mat.side = THREE.DoubleSide;
