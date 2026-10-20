@@ -49,7 +49,9 @@ function toonGradientMap(): THREE.DataTexture {
 }
 
 // Contorno por "hull": copia de la malla con caras traseras negras y vértices
-// empujados hacia afuera a lo largo de su normal (técnica de outline clásica).
+// empujados hacia afuera a lo largo de su normal. El desplazamiento se hace en
+// espacio de vista y escala con la distancia, así el grosor es constante en
+// pantalla sin importar la escala propia de cada nodo (Blender usa 0.06-0.6).
 function outlineMaterial(): THREE.MeshBasicMaterial {
   const mat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide });
   (mat as any).userData = { outline: true };
@@ -57,9 +59,12 @@ function outlineMaterial(): THREE.MeshBasicMaterial {
     shader.uniforms.uOutline = { value: (mat as any).userData.size ?? 0.01 };
     shader.vertexShader = "uniform float uOutline;\n" + shader.vertexShader;
     shader.vertexShader = shader.vertexShader.replace(
-      "#include <begin_vertex>",
-      `#include <begin_vertex>
-       transformed += objectNormal * uOutline;`
+      "#include <project_vertex>",
+      `vec4 mvPosition = vec4(transformed, 1.0);
+       mvPosition = modelViewMatrix * mvPosition;
+       vec3 _vn = normalize(normalMatrix * objectNormal);
+       mvPosition.xyz += _vn * uOutline * -mvPosition.z;
+       gl_Position = projectionMatrix * mvPosition;`
     );
   };
   mat.customProgramCacheKey = () => "outline";
@@ -352,8 +357,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
         const model = gltf.scene;
         model.updateMatrixWorld(true);
         const box = new THREE.Box3().setFromObject(model);
-        const modelSize = box.getSize(new THREE.Vector3());
-        const gradMap = toonMode ? toonGradientMap() : null;
+        const toonGradMap = toonMode ? toonGradientMap() : null;
         model.traverse((child) => {
           const mesh = child as THREE.Mesh;
           if (!mesh.isMesh) return;
@@ -369,7 +373,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
             const toon = new THREE.MeshToonMaterial({
               color: basic.color ? basic.color.clone() : new THREE.Color(0xffffff),
               map: basic.map ?? null,
-              gradientMap: gradMap!,
+              gradientMap: toonGradMap!,
               vertexColors: !!mesh.geometry.getAttribute("color"),
               side: THREE.DoubleSide,
             });
@@ -379,7 +383,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
             const first = Array.isArray(orig) ? orig[0] : orig;
             if (first && (first as any).isMeshBasicMaterial && mesh.parent) {
               const om = outlineMaterial();
-              (om as any).userData.size = Math.max(modelSize.length() * 0.0015, 1e-4);
+              (om as any).userData.size = 0.02;
               om.needsUpdate = true;
               const oMesh = new THREE.Mesh(mesh.geometry, om);
               oMesh.frustumCulled = false;
