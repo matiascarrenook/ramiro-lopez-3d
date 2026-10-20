@@ -3,6 +3,7 @@ import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
 import { RGBELoader } from "three/examples/jsm/loaders/RGBELoader.js";
+import { OutlineEffect } from "three/examples/jsm/effects/OutlineEffect.js";
 
 export const DEFAULT_EXPOSURE = 0.55;
 export const DEFAULT_LIGHTING = 0.5;
@@ -48,29 +49,6 @@ function toonGradientMap(): THREE.DataTexture {
   return tex;
 }
 
-// Contorno por "hull": copia de la malla con caras traseras negras y vértices
-// empujados hacia afuera a lo largo de su normal. El desplazamiento se hace en
-// espacio de vista y escala con la distancia, así el grosor es constante en
-// pantalla sin importar la escala propia de cada nodo (Blender usa 0.06-0.6).
-function outlineMaterial(): THREE.MeshBasicMaterial {
-  const mat = new THREE.MeshBasicMaterial({ color: 0x000000, side: THREE.BackSide });
-  (mat as any).userData = { outline: true };
-  mat.onBeforeCompile = (shader) => {
-    shader.uniforms.uOutline = { value: (mat as any).userData.size ?? 0.01 };
-    shader.vertexShader = "uniform float uOutline;\n" + shader.vertexShader;
-    shader.vertexShader = shader.vertexShader.replace(
-      "#include <project_vertex>",
-      `vec4 mvPosition = vec4(transformed, 1.0);
-       mvPosition = modelViewMatrix * mvPosition;
-       vec3 _vn = normalize(normalMatrix * objectNormal);
-       mvPosition.xyz += _vn * uOutline * -mvPosition.z;
-       gl_Position = projectionMatrix * mvPosition;`
-    );
-  };
-  mat.customProgramCacheKey = () => "outline";
-  return mat;
-}
-
 export type ViewerHandle = {
   load(url: string, exposure?: number, lightingArg?: number, roughnessArg?: number, metalnessArg?: number, envArg?: number, saturationArg?: number, hdriArg?: string, contrastArg?: boolean, spinCenterArg?: [number, number, number], toonArg?: boolean): void;
   dispose(): void;
@@ -107,6 +85,13 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = options.exposure ?? DEFAULT_EXPOSURE;
   renderer.setSize(width, height);
+  // Contorno tipo cómic para los materiales toon (ver load()).
+  const outlineEffect = new OutlineEffect(renderer, {
+    defaultThickness: 0.006,
+    defaultColor: [0.85, 0.85, 0.85],
+    defaultAlpha: 1,
+    defaultKeepAlive: true,
+  });
   renderer.domElement.style.display = "block";
   renderer.domElement.style.touchAction = "none";
   renderer.domElement.style.userSelect = "none";
@@ -377,21 +362,16 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
               vertexColors: !!mesh.geometry.getAttribute("color"),
               side: THREE.DoubleSide,
             });
+            // El contorno lo dibuja OutlineEffect a partir de este userData.
+            toon.userData.outlineParameters = {
+              thickness: 0.006,
+              color: [0.85, 0.85, 0.85],
+              alpha: 1,
+              visible: true,
+              keepAlive: true,
+            };
             return toon;
           };
-          if (toonMode) {
-            const first = Array.isArray(orig) ? orig[0] : orig;
-            if (first && (first as any).isMeshBasicMaterial && mesh.parent) {
-              const om = outlineMaterial();
-              (om as any).userData.size = 0.05;
-              om.needsUpdate = true;
-              const oMesh = new THREE.Mesh(mesh.geometry, om);
-              oMesh.frustumCulled = false;
-              oMesh.matrixAutoUpdate = false;
-              oMesh.matrix.copy(mesh.matrix);
-              mesh.parent.add(oMesh);
-            }
-          }
           mesh.material = toonMode
             ? Array.isArray(orig)
               ? orig.map(toToon)
@@ -501,7 +481,7 @@ if (saturation !== 1) {
       _envQuat.copy(camera.quaternion).invert();
       scene.environmentRotation.setFromQuaternion(_envQuat);
     }
-    renderer.render(scene, camera);
+    outlineEffect.render(scene, camera);
   }
   animate();
 
