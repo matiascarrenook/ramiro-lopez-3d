@@ -276,6 +276,10 @@ body.shot-mode #inicio {
   cursor: grab;
 }
 
+#case-viewer {
+  background: linear-gradient(to bottom, #2e2e33 0%, #131316 55%, #000000 100%);
+}
+
 #hero-viewer:active,
 #case-viewer:active {
   cursor: grabbing;
