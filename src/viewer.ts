@@ -383,7 +383,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
             const first = Array.isArray(orig) ? orig[0] : orig;
             if (first && (first as any).isMeshBasicMaterial && mesh.parent) {
               const om = outlineMaterial();
-              (om as any).userData.size = 0.02;
+              (om as any).userData.size = 0.05;
               om.needsUpdate = true;
               const oMesh = new THREE.Mesh(mesh.geometry, om);
               oMesh.frustumCulled = false;
