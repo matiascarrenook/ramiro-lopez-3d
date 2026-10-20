@@ -100,18 +100,32 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   const BASE_LIGHTS = { hemi: 0.5, key: 0.9, rim: 2.1, fill: 1.7 };
   const hemi = new THREE.HemisphereLight(0xffffff, 0x3a3a4a, BASE_LIGHTS.hemi);
   scene.add(hemi);
+  // Direcciones de las luces relativas a la CÁMARA: azul siempre a la izquierda de
+  // pantalla, naranja a la derecha y blanca al centro, sin importar cómo gire el modelo.
+  const CAM_LIGHT_DIRS: { light: THREE.DirectionalLight; dir: THREE.Vector3 }[] = [];
   const key = new THREE.DirectionalLight(0xffffff, BASE_LIGHTS.key);
-  key.position.set(0, 5, 5.5); // blanca tenue, centro
   scene.add(key);
   const rim = new THREE.DirectionalLight(0xff2e00, BASE_LIGHTS.rim);
-  rim.position.set(6, 4, 1.5); // naranja saturada, derecha
   scene.add(rim);
   const fill = new THREE.DirectionalLight(0x0040ff, BASE_LIGHTS.fill);
-  fill.position.set(-6, 4, 1.5); // azul saturado, izquierda
   scene.add(fill);
   const contour = new THREE.DirectionalLight(0xffffff, 0);
-  contour.position.set(0, 6, -5);
   scene.add(contour); // luz de contraste: raking light en ángulo para marcar relieves
+
+  function setCamSpaceLights() {
+    const defs: [THREE.DirectionalLight, [number, number, number]][] = [
+      [key, [0, 0.55, 1]], // blanca al centro (frente/arriba)
+      [rim, [0.55, 0.35, 0.7]], // naranja a la derecha de pantalla
+      [fill, [-0.55, 0.35, 0.7]], // azul a la izquierda de pantalla
+      [contour, [0, 0.5, -1]], // contraste detrás
+    ];
+    CAM_LIGHT_DIRS.length = 0;
+    for (const [light, d] of defs) {
+      const dir = new THREE.Vector3(d[0], d[1], d[2]).applyQuaternion(camera.quaternion).normalize();
+      CAM_LIGHT_DIRS.push({ light, dir });
+      light.position.copy(dir);
+    }
+  }
 
   const GROUND_CONTRAST = { hemi: 0.35, key: 0.6, rim: 1.8, fill: 0.9, contour: 2.2 };
 
@@ -314,6 +328,7 @@ if (saturation !== 1) {
     raf = requestAnimationFrame(animate);
     controls.update();
     if (autoSpin && current && !userInteracting) current.rotation.y += spinSpeed * 0.01;
+    setCamSpaceLights();
     renderer.render(scene, camera);
   }
   animate();
