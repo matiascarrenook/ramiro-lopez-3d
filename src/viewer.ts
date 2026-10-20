@@ -96,6 +96,8 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   const defaultEnv = pmrem.fromScene(studioEnvironment(), 0.04).texture;
   scene.environment = defaultEnv;
   const _envQuat = new THREE.Quaternion();
+  const _panRight = new THREE.Vector3();
+  const _panUp = new THREE.Vector3();
   let hdriRT: THREE.WebGLRenderTarget | null = null;
 
   // La blanca se mantiene tenue para que azul/naranja dominen los reflejos de color.
@@ -159,7 +161,7 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.dampingFactor = isMobile ? 0.12 : 0.08;
-  controls.enablePan = true;
+  controls.enablePan = false; // el pan lo manejo aparte, moviendo el modelo
   controls.autoRotate = false; // el giro lo hace el modelo, no la cámara: las luces quedan fijas
   const spinSpeed = options.autoRotateSpeed ?? (isMobile ? 0.3 : 0.5);
   const SPIN_DEG_PER_S = 9 * spinSpeed; // velocidad del giro en grados/segundo (independiente de los FPS)
@@ -183,6 +185,45 @@ export function createViewer(container: HTMLElement, options: ViewerOptions = {}
 
   let current: THREE.Object3D | null = null;
   let loadToken = 0;
+
+  // Pan manual: desplaza el modelo por la pantalla (boton derecho/medio o Shift+izq).
+  // Es un arrastre normal: mientras el boton esta presionado, no cuenta como orbita.
+  {
+    const el = renderer.domElement;
+    let panning = false;
+    let lastX = 0;
+    let lastY = 0;
+    const panAt = (e: PointerEvent) => {
+      if (!current) return;
+      const rect = el.getBoundingClientRect();
+      const worldPerPx =
+        (2 * Math.tan(((camera.fov * Math.PI) / 180) / 2) * camera.position.distanceTo(controls.target)) /
+        rect.height;
+      const dx = (e.clientX - lastX) * worldPerPx;
+      const dy = (e.clientY - lastY) * worldPerPx;
+      _panRight.setFromMatrixColumn(camera.matrix, 0);
+      _panUp.setFromMatrixColumn(camera.matrix, 1);
+      current.position.addScaledVector(_panRight, -dx);
+      current.position.addScaledVector(_panUp, dy);
+    };
+    el.addEventListener("pointerdown", (e) => {
+      const isPan = e.button === 1 || e.button === 2 || (e.button === 0 && e.shiftKey);
+      if (!isPan) return;
+      panning = true;
+      lastX = e.clientX;
+      lastY = e.clientY;
+    }, { capture: true });
+    document.addEventListener("pointermove", (e) => {
+      if (!panning) return;
+      panAt(e);
+      lastX = e.clientX;
+      lastY = e.clientY;
+    }, { capture: true });
+    const stop = () => { panning = false; };
+    document.addEventListener("pointerup", stop, { capture: true });
+    document.addEventListener("pointercancel", stop, { capture: true });
+    el.addEventListener("contextmenu", (e) => e.preventDefault());
+  }
 
   function disposeObject(root: THREE.Object3D) {
     root.traverse((child) => {
@@ -350,27 +391,13 @@ if (saturation !== 1) {
   }
 
   let raf = 0;
-  const _prevTarget = new THREE.Vector3();
-  const _panDelta = new THREE.Vector3();
   let _lastT = performance.now();
   function animate() {
     raf = requestAnimationFrame(animate);
     const t = performance.now();
     const dt = Math.min((t - _lastT) / 1000, 0.1); // segundos, acotado
     _lastT = t;
-    _prevTarget.copy(controls.target);
     controls.update();
-    // El pan mueve camara y target juntos: trasladamos ese delta al modelo y devolvemos
-    // camara/target a su lugar, asi el modelo se mueve por la pantalla y sigue girando
-    // sobre su propio centro (que viaja con el), siempre en eje.
-    if (current) {
-      _panDelta.subVectors(controls.target, _prevTarget);
-      if (_panDelta.lengthSq() > 1e-10) {
-        current.position.add(_panDelta);
-        camera.position.sub(_panDelta);
-        controls.target.copy(_prevTarget);
-      }
-    }
     // Giro automatico: se frena 2s tras soltar y reanuda acelerando suave.
     const canSpin = autoSpin && !userInteracting && t >= spinResumeAt;
     if (canSpin && current) {
