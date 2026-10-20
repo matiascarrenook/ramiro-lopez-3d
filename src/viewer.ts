@@ -304,12 +304,15 @@ if (saturation !== 1) {
             mat.needsUpdate = true;
           }
         });
-        // Centrar la geometria en el origen del pivote para que el giro sea sobre el propio centro
+        // Centrar el modelo en el origen del pivote para que el giro sea sobre su centro absoluto
         const pivot = new THREE.Group();
+        model.position.set(0, 0, 0);
+        model.updateMatrixWorld(true);
         const box = new THREE.Box3().setFromObject(model);
         const center = box.getCenter(new THREE.Vector3());
-        model.position.sub(center);
+        model.position.copy(center).negate();
         pivot.add(model);
+        pivot.updateMatrixWorld(true);
         scene.add(pivot);
         current = pivot;
         pivot.traverse((child) => {
