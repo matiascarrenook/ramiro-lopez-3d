@@ -39,7 +39,7 @@ function studioEnvironment(): THREE.Scene {
 
 // Gradiente de bandas para cel-shading (3 pasos: sombra, medio, luz).
 function toonGradientMap(): THREE.DataTexture {
-  const steps = new Uint8Array([80, 170, 255]);
+  const steps = new Uint8Array([140, 210, 255]);
   const tex = new THREE.DataTexture(steps, steps.length, 1, THREE.RedFormat);
   tex.minFilter = THREE.NearestFilter;
   tex.magFilter = THREE.NearestFilter;
@@ -429,6 +429,20 @@ if (saturation !== 1) {
           } else if (mat) {
             mat.side = THREE.DoubleSide;
             mat.needsUpdate = true;
+            if (saturation !== 1) {
+              const v = saturation;
+              (mat as any).onBeforeCompile = (shader: any) => {
+                shader.uniforms.uDesat = { value: v };
+                shader.fragmentShader = "uniform float uDesat;\n" + shader.fragmentShader;
+                shader.fragmentShader = shader.fragmentShader.replace(
+                  "#include <opaque_fragment>",
+                  `vec3 _desat_lum = vec3(dot(outgoingLight.rgb, vec3(0.299, 0.587, 0.114)));
+                  outgoingLight.rgb = mix(_desat_lum, outgoingLight.rgb, uDesat);
+                  #include <opaque_fragment>`
+                );
+              };
+              (mat as any).customProgramCacheKey = () => `desat-${v}`;
+            }
           }
         });
         // Centrar el modelo en el origen del pivote para que el giro sea sobre su centro absoluto
