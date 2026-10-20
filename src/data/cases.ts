@@ -96,6 +96,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/zareck.glb",
     coverImage: "/img/cover-zareck.png",
     carousel: seq("zareck", 16),
+    spinVideo: "/video/zareck.mp4",
     links: socialLinks,
   },
   {
@@ -117,6 +118,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/mazinger.glb",
     coverImage: "/img/cover-mazinger.png",
     carousel: seq("mazinger", 16),
+    spinVideo: "/video/mazinger.mp4",
     links: socialLinks,
   },
   {
@@ -162,6 +164,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/parka.glb",
     coverImage: "/img/cover-parka.png",
     carousel: seq("parka", 10),
+    spinVideo: "/video/parka.mp4",
     links: socialLinks,
   },
   {
@@ -184,6 +187,7 @@ export const cases: CaseItem[] = [
     modelUrl: "/models/starfire.glb",
     coverImage: "/img/cover-starfire.png",
     carousel: seq("starfire", 16),
+    spinVideo: "/video/starfire.mp4",
     links: socialLinks,
   },
 ];
