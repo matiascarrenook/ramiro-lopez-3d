@@ -77,7 +77,7 @@ export const cases: CaseItem[] = [
     roughness: 0.97,
     envIntensity: 0.38,
     saturation: 0.61,
-    modelUrl: "/models/maxx-render.glb",
+    modelUrl: "/models/maxx-render.glb?v=2",
     coverImage: "/img/cover-maxx-render.png",
     carousel: seq("maxx-render", 16),
     links: socialLinks,
